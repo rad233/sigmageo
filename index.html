@@ -1237,21 +1237,37 @@
                     </div>
                 </div>
 
-                <!-- Typography Colors (Shared) -->
-                <div class="space-y-3">
-                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Text Color</label>
-                    <div class="flex gap-2">
-                        <button onclick="updateLabState('textColor', '#c5a059')" class="w-8 h-8 rounded-full bg-[#c5a059] border border-transparent focus:ring-gray-300 ring-2 ring-transparent shadow-sm"></button>
-                        <button onclick="updateLabState('textColor', '#000000')" class="w-8 h-8 rounded-full bg-black border-2 border-transparent ring-2 ring-transparent focus:ring-gray-300"></button>
-                        <button onclick="updateLabState('textColor', '#ffffff')" class="w-8 h-8 rounded-full bg-white border border-gray-200 focus:ring-gray-300 ring-2 ring-transparent"></button>
-                        <button onclick="updateLabState('textColor', '#ef4444')" class="w-8 h-8 rounded-full bg-red-500 border border-transparent focus:ring-gray-300 ring-2 ring-transparent"></button>
-                        <button onclick="updateLabState('textColor', '#3b82f6')" class="w-8 h-8 rounded-full bg-blue-500 border border-transparent focus:ring-gray-300 ring-2 ring-transparent"></button>
+                <!-- Colors (Shared) -->
+                <div class="space-y-6">
+                    <div class="space-y-3">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Line Color</label>
+                        <div class="flex gap-2">
+                            <button onclick="updateLabState('lineColor', '#c5a059', false)" class="w-8 h-8 rounded-full bg-[#c5a059] border border-transparent focus:ring-gray-300 ring-2 ring-transparent shadow-sm"></button>
+                            <button onclick="updateLabState('lineColor', '#000000', false)" class="w-8 h-8 rounded-full bg-black border-2 border-transparent ring-2 ring-transparent focus:ring-gray-300"></button>
+                            <button onclick="updateLabState('lineColor', '#ffffff', false)" class="w-8 h-8 rounded-full bg-white border border-gray-200 focus:ring-gray-300 ring-2 ring-transparent"></button>
+                            <button onclick="updateLabState('lineColor', '#ef4444', false)" class="w-8 h-8 rounded-full bg-red-500 border border-transparent focus:ring-gray-300 ring-2 ring-transparent"></button>
+                            <button onclick="updateLabState('lineColor', '#3b82f6', false)" class="w-8 h-8 rounded-full bg-blue-500 border border-transparent focus:ring-gray-300 ring-2 ring-transparent"></button>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Text Color</label>
+                        <div class="flex gap-2">
+                            <button onclick="updateLabState('textColor', '#c5a059', false)" class="w-8 h-8 rounded-full bg-[#c5a059] border border-transparent focus:ring-gray-300 ring-2 ring-transparent shadow-sm"></button>
+                            <button onclick="updateLabState('textColor', '#000000', false)" class="w-8 h-8 rounded-full bg-black border-2 border-transparent ring-2 ring-transparent focus:ring-gray-300"></button>
+                            <button onclick="updateLabState('textColor', '#ffffff', false)" class="w-8 h-8 rounded-full bg-white border border-gray-200 focus:ring-gray-300 ring-2 ring-transparent"></button>
+                            <button onclick="updateLabState('textColor', '#ef4444', false)" class="w-8 h-8 rounded-full bg-red-500 border border-transparent focus:ring-gray-300 ring-2 ring-transparent"></button>
+                            <button onclick="updateLabState('textColor', '#3b82f6', false)" class="w-8 h-8 rounded-full bg-blue-500 border border-transparent focus:ring-gray-300 ring-2 ring-transparent"></button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Action Bottom -->
-            <div class="p-6 border-t border-gray-100 bg-gray-50">
+            <div class="p-6 border-t border-gray-100 bg-gray-50 space-y-3">
+                <button onclick="generateMockup()" class="w-full h-12 rounded-2xl bg-white border-2 border-black text-black font-black uppercase tracking-widest text-xs hover:bg-gray-100 transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="eye" class="w-4 h-4"></i>
+                    See Preview
+                </button>
                 <button onclick="addLabToCart()" class="w-full h-14 rounded-2xl bg-black text-white font-black uppercase tracking-widest text-sm hover:bg-gray-800 transition-colors shadow-lg flex items-center justify-center gap-2">
                     <i data-lucide="shopping-bag" class="w-5 h-5"></i>
                     Add Bespoke to Cart
@@ -2391,11 +2407,13 @@
     let currentLabProductId = null;
 
     const defaultLabState = {
-        view: 'front', // 'front' or 'back'
+        view: 'front',
         frontLeft: "PAIN'S TEMPORARY",
         frontRight: "VICTORY'S FOREVER",
-        backName: 'YOUR NAME',
-        textColor: '#c5a059',
+        backName: "YOUR NAME",
+        backNum: "24",
+        textColor: "#c5a059",
+        lineColor: "#c5a059",
         logoSrc: null,
         logoScale: 1,
         logoX: 0,
@@ -2431,7 +2449,9 @@
 
     function updateLabState(key, value, saveHistory = true) {
         labState[key] = value;
-        renderLabState();
+        // Do NOT automatically call renderLabState() here because we want manual "See Preview"
+        if (key === 'view') renderLabState(); // Only render immediately if switching views
+        
         if (saveHistory) {
             // Debounce history save for sliders, immediate for clicks
             clearTimeout(window.labHistoryTimer);
@@ -2494,12 +2514,11 @@
         document.getElementById('lab-controls-front').classList.toggle('hidden', !isFront);
         document.getElementById('lab-controls-back').classList.toggle('hidden', isFront);
         
-        // Render the high-quality mockup using Canvas instead of HTML overlays
-        generateMockup();
+        // Reset the image to the original template so they don't see an outdated preview while changing options
+        document.getElementById('lab-shirt-img').src = isFront ? window.labTemplates.front : window.labTemplates.back;
     }
 
-    const blankShirtUrl = 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=800';
-    let cachedBaseShirt = null;
+    let cachedBaseShirts = { front: null, back: null };
     let cachedLogoMap = {}; // Cache uploaded logos to prevent flickering
 
     async function loadImg(src) {
@@ -2512,7 +2531,7 @@
                 canvas.width = 800; canvas.height = 1066;
                 const ctx = canvas.getContext('2d');
                 ctx.fillStyle = '#111'; ctx.fillRect(0,0,800,1066);
-                resolve(canvas); // Fallback to black rectangle if network fails
+                resolve(canvas); // Fallback
             };
             img.src = src;
         });
@@ -2523,35 +2542,46 @@
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
         const isFront = labState.view === 'front';
-        
         const imgDisplay = document.getElementById('lab-shirt-img');
+        const loader = document.getElementById('preview-loader');
+        
+        if (loader) loader.classList.remove('hidden');
+        imgDisplay.style.opacity = '0.5';
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        // Load and draw the blank base shirt (cached for instant performance)
-        if (!cachedBaseShirt) cachedBaseShirt = await loadImg(blankShirtUrl);
-        ctx.drawImage(cachedBaseShirt, 0, 0, canvas.width, canvas.height);
+        // Load the EXACT ORIGINAL SHIRT uploaded by the user to preserve authentic fabric and lighting
+        const templateSrc = isFront ? window.labTemplates.front : window.labTemplates.back;
+        
+        if (!cachedBaseShirts[labState.view]) {
+            cachedBaseShirts[labState.view] = await loadImg(templateSrc);
+        }
+        
+        const baseShirt = cachedBaseShirts[labState.view];
+        ctx.drawImage(baseShirt, 0, 0, canvas.width, canvas.height);
         
         // Custom Drawing Logic
         if (isFront) {
-            // Draw V Lines
-            ctx.strokeStyle = labState.textColor;
-            ctx.lineWidth = 4;
-            ctx.lineCap = 'round';
+            // Overpaint the old lines with the NEW thick colored lines to completely hide the old baked-in text
+            ctx.strokeStyle = labState.lineColor || labState.textColor;
+            ctx.lineWidth = 42; // Extremely thick line to fully bury the old text track
+            ctx.lineCap = 'butt'; // Flat ends to match the original style
             
+            // Left Overpaint Line
             ctx.beginPath();
             ctx.moveTo(canvas.width * 0.44, canvas.height * 0.40);
             ctx.lineTo(canvas.width * 0.28, canvas.height * 0.82);
             ctx.stroke();
             
+            // Right Overpaint Line
             ctx.beginPath();
             ctx.moveTo(canvas.width * 0.56, canvas.height * 0.40);
             ctx.lineTo(canvas.width * 0.72, canvas.height * 0.82);
             ctx.stroke();
             
-            // Draw Text
+            // Draw NEW Text exactly on top of the newly painted line
             ctx.fillStyle = labState.textColor;
-            ctx.font = 'bold 36px "Bebas Neue", sans-serif';
+            ctx.font = 'bold 32px "Bebas Neue", sans-serif'; // Reduced font size to fit neatly inside the line track
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             
@@ -2581,9 +2611,18 @@
             }
             
         } else {
-            // Back spine text
+            // Back spine overpaint
+            ctx.strokeStyle = '#18181b'; // Dark color matching the shirt back to hide old name
+            ctx.lineWidth = 80;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(canvas.width * 0.5, canvas.height * 0.3);
+            ctx.lineTo(canvas.width * 0.5, canvas.height * 0.8);
+            ctx.stroke();
+
+            // Back spine custom text
             ctx.fillStyle = labState.textColor;
-            ctx.font = 'bold 72px "Bebas Neue", sans-serif';
+            ctx.font = 'bold 64px "Bebas Neue", sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             
@@ -2602,6 +2641,8 @@
         
         // Output canvas to image display
         imgDisplay.src = canvas.toDataURL('image/png');
+        imgDisplay.style.opacity = '1';
+        if (loader) loader.classList.add('hidden');
     }
 
     function addLabToCart() {
