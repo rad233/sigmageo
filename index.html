@@ -1370,31 +1370,43 @@
 
     try {
         dropItems = JSON.parse(localStorage.getItem('hype_drops')) || [
-            { time: "DROPPING IN 2H", name: "Hype Essential Tee", collection: "Core Series 01", imageSrc: "assets/1.jpg" },
-            { time: "READY TO SHIP", name: "District Oversized Hoodie", collection: "Winter '26", imageSrc: "assets/2.jpg" },
-            { time: "LIMITED EDITION", name: "Batumi Street Joggers", collection: "Region Exclusive", imageSrc: "assets/3.jpg" },
-            { time: "DROPPING TOMORROW", name: "Culture Beanie", collection: "Headwear Pack", imageSrc: "assets/4.jpg" }
+            { time: "DROPPING IN 2H", name: "Hype Essential Tee", collection: "Core Series 01", imageSrc: "assets/shirt1-front.png" },
+            { time: "READY TO SHIP", name: "District Oversized Hoodie", collection: "Winter '26", imageSrc: "assets/shirt2-front.png" },
+            { time: "LIMITED EDITION", name: "Batumi Street Joggers", collection: "Region Exclusive", imageSrc: "assets/shirt3-front.png" },
+            { time: "DROPPING TOMORROW", name: "Culture Beanie", collection: "Headwear Pack", imageSrc: "assets/shirt4-front.png" }
         ];
     } catch (e) {
         console.error("Data corruption detected, resetting drops.");
         dropItems = [
-            { time: "DROPPING IN 2H", name: "Hype Essential Tee", collection: "Core Series 01", imageSrc: "assets/1.jpg" }
+            { time: "DROPPING IN 2H", name: "Hype Essential Tee", collection: "Core Series 01", imageSrc: "assets/shirt1-front.png" }
         ];
     }
 
     try {
         fullCollection = JSON.parse(localStorage.getItem('hype_collection')) || [
-            { time: "$85", name: "Classic Logo Tee", collection: "Archive", imageSrc: "assets/7.jpg" },
-            { time: "$120", name: "Street Culture Tote", collection: "Lifestyle", imageSrc: "assets/8.jpg" },
-            { time: "$65", name: "Hype District Cap", collection: "Accessories", imageSrc: "assets/6.jpg" },
-            { time: "$45", name: "Individuality Tank", collection: "Statement Piece", imageSrc: "assets/5.jpg" }
+            { time: "$85", name: "Classic Logo Tee", collection: "Archive", imageSrc: "assets/shirt7-front.png" },
+            { time: "$120", name: "Street Culture Tote", collection: "Lifestyle", imageSrc: "assets/shirt8-front.png" },
+            { time: "$65", name: "Hype District Cap", collection: "Accessories", imageSrc: "assets/shirt6-front.png" },
+            { time: "$45", name: "Individuality Tank", collection: "Statement Piece", imageSrc: "assets/shirt5-front.png" }
         ];
     } catch (e) {
         console.error("Data corruption detected, resetting collection.");
         fullCollection = [
-            { time: "$85", name: "Classic Logo Tee", collection: "Archive", imageSrc: "assets/7.jpg" }
+            { time: "$85", name: "Classic Logo Tee", collection: "Archive", imageSrc: "assets/shirt7-front.png" }
         ];
     }
+
+    // Cache Migration: Automatically upgrade old .jpg URLs in localStorage to the new template images
+    const upgradeImageUrl = (imgStr) => {
+        if (!imgStr) return imgStr;
+        const match = imgStr.match(/assets\/(\d+)\.jpg$/);
+        if (match) return `assets/shirt${match[1]}-front.png`;
+        return imgStr;
+    };
+    dropItems.forEach(item => { item.imageSrc = upgradeImageUrl(item.imageSrc); });
+    fullCollection.forEach(item => { item.imageSrc = upgradeImageUrl(item.imageSrc); });
+    localStorage.setItem('hype_drops', JSON.stringify(dropItems));
+    localStorage.setItem('hype_collection', JSON.stringify(fullCollection));
 
     function saveData() {
         localStorage.setItem('hype_drops', JSON.stringify(dropItems));
@@ -1996,8 +2008,14 @@
 
         // Extract a product index from the main image URL to map to the custom shirt templates
         let productId = "1";
-        const match = currentModalImages[0].match(/(\d+)\.jpg$/);
-        if (match) productId = match[1];
+        const match = currentModalImages[0].match(/shirt(\d+)-front\.png$/);
+        const legacyMatch = currentModalImages[0].match(/(\d+)\.jpg$/);
+        
+        if (match) {
+            productId = match[1];
+        } else if (legacyMatch) {
+            productId = legacyMatch[1];
+        }
 
         // Update the customize button so it passes the specific productId
         const btnCustomize = document.getElementById('btn-customize');
@@ -2499,5 +2517,3 @@
 </body>
 
 </html>
-
-
