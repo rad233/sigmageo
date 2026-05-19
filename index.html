@@ -1396,19 +1396,39 @@
         ];
     }
 
-    // Cache Migration: Automatically upgrade old .jpg URLs in localStorage to the new template images
+    // Cache Migration: Automatically upgrade old .jpg URLs and repair previously corrupted 5-8 PNGs in localStorage
     const upgradeImageUrl = (imgStr) => {
         if (!imgStr) return imgStr;
-        const match = imgStr.match(/(?:assets|assests)?\/(\d+)\.jpg$/i);
+        
+        // 1. Convert legacy .jpg (e.g., assets/7.jpg or 7.jpg)
+        let match = imgStr.match(/(?:assets|assests)?\/*(\d+)\.jpg$/i);
         if (match) {
             const index = parseInt(match[1]);
             const normalizedIndex = ((index - 1) % 4) + 1;
             return `assets/shirt${normalizedIndex}-front.png`;
         }
+        
+        // 2. Repair invalid shirt5-shirt8 .png paths (e.g. assets/shirt7-front.png)
+        match = imgStr.match(/(?:assets|assests)?\/*shirt(\d+)-(front|back)\.png$/i);
+        if (match) {
+            const index = parseInt(match[1]);
+            if (index > 4) {
+                const normalizedIndex = ((index - 1) % 4) + 1;
+                return `assets/shirt${normalizedIndex}-${match[2]}.png`;
+            }
+        }
+        
         return imgStr;
     };
-    dropItems.forEach(item => { item.imageSrc = upgradeImageUrl(item.imageSrc); });
-    fullCollection.forEach(item => { item.imageSrc = upgradeImageUrl(item.imageSrc); });
+    
+    dropItems.forEach(item => { 
+        item.imageSrc = upgradeImageUrl(item.imageSrc); 
+        if (item.gallery) item.gallery = item.gallery.map(upgradeImageUrl);
+    });
+    fullCollection.forEach(item => { 
+        item.imageSrc = upgradeImageUrl(item.imageSrc); 
+        if (item.gallery) item.gallery = item.gallery.map(upgradeImageUrl);
+    });
     localStorage.setItem('hype_drops', JSON.stringify(dropItems));
     localStorage.setItem('hype_collection', JSON.stringify(fullCollection));
 
@@ -2524,6 +2544,3 @@
 </body>
 
 </html>
-
-
-
