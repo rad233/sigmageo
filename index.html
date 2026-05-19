@@ -940,14 +940,14 @@
             <div class="container-fluid">
                 <div class="horiz-gallery-wrapper">
                     <div class="horiz-gallery-strip">
-                        <div class="project-wrap"><img src="assests/1.jpg" alt="Collection 1"></div>
-                        <div class="project-wrap"><img src="assests/2.jpg" alt="Collection 2"></div>
-                        <div class="project-wrap"><img src="assests/3.jpg" alt="Collection 3"></div>
-                        <div class="project-wrap"><img src="assests/4.jpg" alt="Collection 4"></div>
-                        <div class="project-wrap"><img src="assests/5.jpg" alt="Collection 5"></div>
-                        <div class="project-wrap"><img src="assests/6.jpg" alt="Collection 6"></div>
-                        <div class="project-wrap"><img src="assests/7.jpg" alt="Collection 7"></div>
-                        <div class="project-wrap"><img src="assests/8.jpg" alt="Collection 8"></div>
+                        <div class="project-wrap"><img src="assets/1.jpg" alt="Collection 1"></div>
+                        <div class="project-wrap"><img src="assets/2.jpg" alt="Collection 2"></div>
+                        <div class="project-wrap"><img src="assets/3.jpg" alt="Collection 3"></div>
+                        <div class="project-wrap"><img src="assets/4.jpg" alt="Collection 4"></div>
+                        <div class="project-wrap"><img src="assets/5.jpg" alt="Collection 5"></div>
+                        <div class="project-wrap"><img src="assets/6.jpg" alt="Collection 6"></div>
+                        <div class="project-wrap"><img src="assets/7.jpg" alt="Collection 7"></div>
+                        <div class="project-wrap"><img src="assets/8.jpg" alt="Collection 8"></div>
                     </div>
                 </div>
             </div>
@@ -1370,29 +1370,29 @@
 
     try {
         dropItems = JSON.parse(localStorage.getItem('hype_drops')) || [
-            { time: "DROPPING IN 2H", name: "Hype Essential Tee", collection: "Core Series 01", imageSrc: "assests/shirt1-front.png" },
-            { time: "READY TO SHIP", name: "District Oversized Hoodie", collection: "Winter '26", imageSrc: "assests/shirt2-front.png" },
-            { time: "LIMITED EDITION", name: "Batumi Street Joggers", collection: "Region Exclusive", imageSrc: "assests/shirt3-front.png" },
-            { time: "DROPPING TOMORROW", name: "Culture Beanie", collection: "Headwear Pack", imageSrc: "assests/shirt4-front.png" }
+            { time: "DROPPING IN 2H", name: "Hype Essential Tee", collection: "Core Series 01", imageSrc: "assets/shirt1-front.png" },
+            { time: "READY TO SHIP", name: "District Oversized Hoodie", collection: "Winter '26", imageSrc: "assets/shirt2-front.png" },
+            { time: "LIMITED EDITION", name: "Batumi Street Joggers", collection: "Region Exclusive", imageSrc: "assets/shirt3-front.png" },
+            { time: "DROPPING TOMORROW", name: "Culture Beanie", collection: "Headwear Pack", imageSrc: "assets/shirt4-front.png" }
         ];
     } catch (e) {
         console.error("Data corruption detected, resetting drops.");
         dropItems = [
-            { time: "DROPPING IN 2H", name: "Hype Essential Tee", collection: "Core Series 01", imageSrc: "assests/shirt1-front.png" }
+            { time: "DROPPING IN 2H", name: "Hype Essential Tee", collection: "Core Series 01", imageSrc: "assets/shirt1-front.png" }
         ];
     }
 
     try {
         fullCollection = JSON.parse(localStorage.getItem('hype_collection')) || [
-            { time: "$85", name: "Classic Logo Tee", collection: "Archive", imageSrc: "assests/shirt3-front.png" },
-            { time: "$120", name: "Street Culture Tote", collection: "Lifestyle", imageSrc: "assests/shirt4-front.png" },
-            { time: "$65", name: "Hype District Cap", collection: "Accessories", imageSrc: "assests/shirt2-front.png" },
-            { time: "$45", name: "Individuality Tank", collection: "Statement Piece", imageSrc: "assests/shirt1-front.png" }
+            { time: "$85", name: "Classic Logo Tee", collection: "Archive", imageSrc: "assets/shirt3-front.png" },
+            { time: "$120", name: "Street Culture Tote", collection: "Lifestyle", imageSrc: "assets/shirt4-front.png" },
+            { time: "$65", name: "Hype District Cap", collection: "Accessories", imageSrc: "assets/shirt2-front.png" },
+            { time: "$45", name: "Individuality Tank", collection: "Statement Piece", imageSrc: "assets/shirt1-front.png" }
         ];
     } catch (e) {
         console.error("Data corruption detected, resetting collection.");
         fullCollection = [
-            { time: "$85", name: "Classic Logo Tee", collection: "Archive", imageSrc: "assests/shirt3-front.png" }
+            { time: "$85", name: "Classic Logo Tee", collection: "Archive", imageSrc: "assets/shirt3-front.png" }
         ];
     }
 
@@ -1403,7 +1403,7 @@
         if (match) {
             const index = parseInt(match[1]);
             const normalizedIndex = ((index - 1) % 4) + 1;
-            return `assests/shirt${normalizedIndex}-front.png`;
+            return `assets/shirt${normalizedIndex}-front.png`;
         }
         return imgStr;
     };
@@ -2007,7 +2007,7 @@
     let currentImgIndex = 0;
 
     function openProductModal(name, gallery, price, oldPrice) {
-        currentModalImages = gallery && gallery.length > 0 ? gallery : ["assests/1.jpg", "assests/2.jpg", "assests/4.jpg", "assests/6.jpg"];
+        currentModalImages = gallery && gallery.length > 0 ? gallery : ["assets/1.jpg", "assets/2.jpg", "assets/4.jpg", "assets/6.jpg"];
         currentImgIndex = 0;
 
         // Extract a product index from the main image URL to map to the custom shirt templates
@@ -2398,8 +2398,8 @@
         
         // Dynamically load the specific template based on the clicked product (e.g. shirt1-front.png)
         window.labTemplates = {
-            front: `assests/shirt${normalizedIndex}-front.png`,
-            back: `assests/shirt${normalizedIndex}-back.png`
+            front: `assets/shirt${normalizedIndex}-front.png`,
+            back: `assets/shirt${normalizedIndex}-back.png`
         };
         
         labState = JSON.parse(JSON.stringify(defaultLabState));
@@ -2524,3 +2524,6 @@
 </body>
 
 </html>
+
+
+
