@@ -1159,44 +1159,17 @@
 
             <!-- The Shirt Container -->
             <div class="relative w-full max-w-[400px] aspect-[3/4] flex items-center justify-center">
-                <!-- Background Shirt Image (User uploads this to assets/ as discussed) -->
-                <img id="lab-shirt-img" src="" alt="Custom Shirt" class="absolute inset-0 w-full h-full object-contain pointer-events-none z-10 drop-shadow-2xl" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'533\'><rect width=\'100%\' height=\'100%\' fill=\'%23e5e7eb\'/><text x=\'50%\' y=\'50%\' font-family=\'sans-serif\' font-size=\'20\' text-anchor=\'middle\' fill=\'%239ca3af\'>Upload your shirt images to assets/</text></svg>'" />
-
-                <!-- Dynamic Overlay Container -->
-                <div class="absolute inset-0 z-20 pointer-events-none" id="lab-overlays">
-                    <!-- Front Angled Captions (with Masks) -->
-                    <div id="overlay-front-caption" class="absolute inset-0 hidden">
-                        <!-- Left Mask & Text -->
-                        <div class="absolute top-[46%] left-[32%] w-[5%] h-[32%] transform rotate-[24deg]">
-                            <!-- The Mask: colored to match the gray stripe and blurred to blend -->
-                            <div class="absolute inset-[-10%] bg-[#2a2a2a] rounded-full blur-[4px] opacity-100"></div>
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <span id="lab-front-left-display" class="overlay-text font-bold text-xs whitespace-nowrap -rotate-90 tracking-[0.15em] relative z-10" style="font-family: 'Bebas Neue'">PAIN'S TEMPORARY</span>
-                            </div>
-                        </div>
-                        <!-- Right Mask & Text -->
-                        <div class="absolute top-[46%] right-[32%] w-[5%] h-[32%] transform -rotate-[24deg]">
-                            <!-- The Mask: colored to match the gray stripe and blurred to blend -->
-                            <div class="absolute inset-[-10%] bg-[#2a2a2a] rounded-full blur-[4px] opacity-100"></div>
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <span id="lab-front-right-display" class="overlay-text font-bold text-xs whitespace-nowrap rotate-90 tracking-[0.15em] relative z-10" style="font-family: 'Bebas Neue'">VICTORY'S FOREVER</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Center Logo -->
-                    <div id="overlay-center-logo" class="absolute top-[40%] left-0 w-full flex justify-center hidden">
-                        <div id="lab-logo-wrapper" class="relative" style="transform: translate(0px, 0px) scale(1) rotate(0deg);">
-                            <img id="lab-logo-display" src="" class="max-w-[150px] object-contain hidden" />
-                        </div>
-                    </div>
-
-                    <!-- Back Vertical Name (with Mask) -->
-                    <div id="overlay-back-text" class="absolute top-[28%] left-[46%] w-[8%] h-[50%] hidden">
-                        <div class="absolute inset-0 bg-[#0c0c0c] rounded-full blur-[2px] opacity-95"></div>
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <span id="lab-back-name-display" class="overlay-text font-black text-4xl whitespace-nowrap rotate-90 tracking-[0.1em]" style="font-family: 'Bebas Neue'">YOUR NAME</span>
-                        </div>
+                <!-- Background Shirt Image & Canvas output -->
+                <img id="lab-shirt-img" src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=800" alt="Custom Shirt Mockup" class="absolute inset-0 w-full h-full object-contain pointer-events-none z-10 drop-shadow-2xl transition-opacity duration-300" />
+                
+                <!-- Hidden Canvas for rendering the mockup -->
+                <canvas id="preview-canvas" width="800" height="1066" class="hidden"></canvas>
+                
+                <!-- Loading State overlay -->
+                <div id="preview-loader" class="absolute inset-0 z-20 flex items-center justify-center bg-gray-100/80 backdrop-blur-sm hidden">
+                    <div class="flex flex-col items-center gap-2">
+                        <i data-lucide="loader-2" class="w-8 h-8 animate-spin text-black"></i>
+                        <span class="text-xs font-bold uppercase tracking-widest text-black">Generating Preview...</span>
                     </div>
                 </div>
             </div>
@@ -2518,48 +2491,129 @@
         document.getElementById('btn-view-front').className = isFront ? 'px-6 py-2 rounded-full text-xs font-bold bg-black text-white transition-all' : 'px-6 py-2 rounded-full text-xs font-bold text-gray-500 hover:text-black transition-all';
         document.getElementById('btn-view-back').className = !isFront ? 'px-6 py-2 rounded-full text-xs font-bold bg-black text-white transition-all' : 'px-6 py-2 rounded-full text-xs font-bold text-gray-500 hover:text-black transition-all';
         
-        document.getElementById('lab-shirt-img').src = isFront ? window.labTemplates.front : window.labTemplates.back;
-        
         document.getElementById('lab-controls-front').classList.toggle('hidden', !isFront);
         document.getElementById('lab-controls-back').classList.toggle('hidden', isFront);
         
-        document.getElementById('overlay-front-caption').classList.toggle('hidden', !isFront);
-        document.getElementById('overlay-center-logo').classList.toggle('hidden', !isFront);
-        document.getElementById('overlay-back-text').classList.toggle('hidden', isFront);
+        // Render the high-quality mockup using Canvas instead of HTML overlays
+        generateMockup();
+    }
 
-        // Render Values
-        const fLeft = document.getElementById('lab-front-left-display');
-        const fRight = document.getElementById('lab-front-right-display');
-        const bName = document.getElementById('lab-back-name-display');
+    const blankShirtUrl = 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=800';
+    let cachedBaseShirt = null;
+    let cachedLogoMap = {}; // Cache uploaded logos to prevent flickering
 
-        if (fLeft) fLeft.textContent = labState.frontLeft;
-        if (fRight) fRight.textContent = labState.frontRight;
-        if (bName) bName.textContent = labState.backName;
+    async function loadImg(src) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.crossOrigin = "Anonymous";
+            img.onload = () => resolve(img);
+            img.onerror = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = 800; canvas.height = 1066;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#111'; ctx.fillRect(0,0,800,1066);
+                resolve(canvas); // Fallback to black rectangle if network fails
+            };
+            img.src = src;
+        });
+    }
 
-        // Render Colors
-        document.querySelectorAll('.overlay-text').forEach(el => el.style.color = labState.textColor);
+    async function generateMockup() {
+        const canvas = document.getElementById('preview-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const isFront = labState.view === 'front';
+        
+        const imgDisplay = document.getElementById('lab-shirt-img');
 
-        // Render Logo
-        if (labState.logoSrc) {
-            const logoImg = document.getElementById('lab-logo-display');
-            logoImg.src = labState.logoSrc;
-            logoImg.classList.remove('hidden');
-            document.getElementById('lab-logo-sliders').classList.remove('hidden');
-            document.getElementById('lab-logo-wrapper').style.transform = `translate(${labState.logoX}px, ${labState.logoY}px) scale(${labState.logoScale})`;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Load and draw the blank base shirt (cached for instant performance)
+        if (!cachedBaseShirt) cachedBaseShirt = await loadImg(blankShirtUrl);
+        ctx.drawImage(cachedBaseShirt, 0, 0, canvas.width, canvas.height);
+        
+        // Custom Drawing Logic
+        if (isFront) {
+            // Draw V Lines
+            ctx.strokeStyle = labState.textColor;
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+            
+            ctx.beginPath();
+            ctx.moveTo(canvas.width * 0.44, canvas.height * 0.40);
+            ctx.lineTo(canvas.width * 0.28, canvas.height * 0.82);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(canvas.width * 0.56, canvas.height * 0.40);
+            ctx.lineTo(canvas.width * 0.72, canvas.height * 0.82);
+            ctx.stroke();
+            
+            // Draw Text
+            ctx.fillStyle = labState.textColor;
+            ctx.font = 'bold 36px "Bebas Neue", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Left Text
+            ctx.save();
+            ctx.translate(canvas.width * 0.33, canvas.height * 0.61);
+            ctx.rotate(-68 * Math.PI / 180); 
+            ctx.fillText(labState.frontLeft.toUpperCase(), 0, 0);
+            ctx.restore();
+            
+            // Right Text
+            ctx.save();
+            ctx.translate(canvas.width * 0.67, canvas.height * 0.61);
+            ctx.rotate(68 * Math.PI / 180); 
+            ctx.fillText(labState.frontRight.toUpperCase(), 0, 0);
+            ctx.restore();
+            
+            // Uploaded Center Logo
+            if (labState.logoSrc) {
+                if (!cachedLogoMap[labState.logoSrc]) cachedLogoMap[labState.logoSrc] = await loadImg(labState.logoSrc);
+                const logo = cachedLogoMap[labState.logoSrc];
+                const w = 200 * labState.logoScale;
+                const h = (logo.height / logo.width) * w;
+                const x = (canvas.width / 2) - (w / 2) + parseInt(labState.logoX);
+                const y = (canvas.height * 0.35) - (h / 2) + parseInt(labState.logoY);
+                ctx.drawImage(logo, x, y, w, h);
+            }
+            
         } else {
-            document.getElementById('lab-logo-display').classList.add('hidden');
-            document.getElementById('lab-logo-sliders').classList.add('hidden');
+            // Back spine text
+            ctx.fillStyle = labState.textColor;
+            ctx.font = 'bold 72px "Bebas Neue", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            ctx.save();
+            ctx.translate(canvas.width * 0.5, canvas.height * 0.45);
+            ctx.rotate(90 * Math.PI / 180);
+            const chars = labState.backName.toUpperCase().split('');
+            const spacing = 50;
+            let currentX = -(chars.length * spacing) / 2 + (spacing/2);
+            chars.forEach(char => {
+                ctx.fillText(char, currentX, 0);
+                currentX += spacing;
+            });
+            ctx.restore();
         }
+        
+        // Output canvas to image display
+        imgDisplay.src = canvas.toDataURL('image/png');
     }
 
     function addLabToCart() {
+        const generatedImg = document.getElementById('lab-shirt-img').src; // Save the generated mockup
+        
         const item = {
             id: currentLabProductId + '-' + Date.now(),
             name: "Bespoke Customized Shirt",
             price: 120, // Premium price for custom
             qty: 1,
             size: 'L',
-            img: window.labTemplates.front,
+            img: generatedImg, // Add the exact generated mockup
             customSpecs: { ...labState } // Capture the design details
         };
         cart.push(item);
