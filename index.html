@@ -1164,9 +1164,22 @@
 
                 <!-- Dynamic Overlay Container -->
                 <div class="absolute inset-0 z-20 pointer-events-none" id="lab-overlays">
-                    <!-- Front Caption -->
-                    <div id="overlay-front-caption" class="absolute top-[30%] left-0 w-full text-center hidden">
-                        <span id="lab-front-text-display" class="overlay-text font-black text-2xl text-black" style="font-family: 'Bebas Neue'">CAPTION HERE</span>
+                    <!-- Front Angled Captions (with Masks) -->
+                    <div id="overlay-front-caption" class="absolute inset-0 hidden">
+                        <!-- Left Mask & Text -->
+                        <div class="absolute top-[35%] left-[23%] w-[6%] h-[40%] transform rotate-[18deg]">
+                            <div class="absolute inset-0 bg-[#0c0c0c] rounded-full blur-[1px] opacity-95"></div>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span id="lab-front-left-display" class="overlay-text font-black text-lg whitespace-nowrap -rotate-90 tracking-[0.1em]" style="font-family: 'Bebas Neue'">PAIN'S TEMPORARY</span>
+                            </div>
+                        </div>
+                        <!-- Right Mask & Text -->
+                        <div class="absolute top-[35%] right-[23%] w-[6%] h-[40%] transform -rotate-[18deg]">
+                            <div class="absolute inset-0 bg-[#0c0c0c] rounded-full blur-[1px] opacity-95"></div>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span id="lab-front-right-display" class="overlay-text font-black text-lg whitespace-nowrap rotate-90 tracking-[0.1em]" style="font-family: 'Bebas Neue'">VICTORY'S FOREVER</span>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Center Logo -->
@@ -1176,10 +1189,12 @@
                         </div>
                     </div>
 
-                    <!-- Back Name & Number -->
-                    <div id="overlay-back-text" class="absolute top-[25%] left-0 w-full text-center hidden flex-col items-center gap-4">
-                        <span id="lab-back-name-display" class="overlay-text font-black text-3xl text-black" style="font-family: 'Bebas Neue'">LAST NAME</span>
-                        <span id="lab-back-num-display" class="overlay-text font-black text-7xl text-black" style="font-family: 'Bebas Neue'">99</span>
+                    <!-- Back Vertical Name (with Mask) -->
+                    <div id="overlay-back-text" class="absolute top-[28%] left-[46%] w-[8%] h-[50%] hidden">
+                        <div class="absolute inset-0 bg-[#0c0c0c] rounded-full blur-[2px] opacity-95"></div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span id="lab-back-name-display" class="overlay-text font-black text-4xl whitespace-nowrap rotate-90 tracking-[0.1em]" style="font-family: 'Bebas Neue'">YOUR NAME</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1206,8 +1221,12 @@
                 <!-- Front Controls -->
                 <div id="lab-controls-front" class="space-y-6">
                     <div class="space-y-3">
-                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Front Caption</label>
-                        <input type="text" id="lab-front-text" value="CAPTION HERE" oninput="updateLabState('frontCaption', this.value)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-black transition-colors" />
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Left Caption</label>
+                        <input type="text" id="lab-front-left" value="PAIN'S TEMPORARY" oninput="updateLabState('frontLeft', this.value)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-black transition-colors uppercase" />
+                    </div>
+                    <div class="space-y-3">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Right Caption</label>
+                        <input type="text" id="lab-front-right" value="VICTORY'S FOREVER" oninput="updateLabState('frontRight', this.value)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-black transition-colors uppercase" />
                     </div>
 
                     <div class="space-y-3">
@@ -1238,12 +1257,8 @@
                 <!-- Back Controls -->
                 <div id="lab-controls-back" class="space-y-6 hidden">
                     <div class="space-y-3">
-                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Last Name</label>
-                        <input type="text" id="lab-back-name" value="LAST NAME" oninput="updateLabState('backName', this.value)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-black transition-colors uppercase" />
-                    </div>
-                    <div class="space-y-3">
-                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Number</label>
-                        <input type="text" id="lab-back-num" value="99" oninput="updateLabState('backNum', this.value)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-black transition-colors" />
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Vertical Name</label>
+                        <input type="text" id="lab-back-name" value="YOUR NAME" oninput="updateLabState('backName', this.value)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium outline-none focus:border-black transition-colors uppercase" />
                     </div>
                 </div>
 
@@ -1251,6 +1266,7 @@
                 <div class="space-y-3">
                     <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Text Color</label>
                     <div class="flex gap-2">
+                        <button onclick="updateLabState('textColor', '#c5a059')" class="w-8 h-8 rounded-full bg-[#c5a059] border border-transparent focus:ring-gray-300 ring-2 ring-transparent shadow-sm"></button>
                         <button onclick="updateLabState('textColor', '#000000')" class="w-8 h-8 rounded-full bg-black border-2 border-transparent ring-2 ring-transparent focus:ring-gray-300"></button>
                         <button onclick="updateLabState('textColor', '#ffffff')" class="w-8 h-8 rounded-full bg-white border border-gray-200 focus:ring-gray-300 ring-2 ring-transparent"></button>
                         <button onclick="updateLabState('textColor', '#ef4444')" class="w-8 h-8 rounded-full bg-red-500 border border-transparent focus:ring-gray-300 ring-2 ring-transparent"></button>
@@ -2401,10 +2417,10 @@
 
     const defaultLabState = {
         view: 'front', // 'front' or 'back'
-        frontCaption: 'CAPTION HERE',
-        backName: 'LAST NAME',
-        backNum: '99',
-        textColor: '#000000',
+        frontLeft: "PAIN'S TEMPORARY",
+        frontRight: "VICTORY'S FOREVER",
+        backName: 'YOUR NAME',
+        textColor: '#c5a059',
         logoSrc: null,
         logoScale: 1,
         logoX: 0,
@@ -2458,18 +2474,28 @@
             renderLabState();
             
             // Sync UI Inputs
-            document.getElementById('lab-front-text').value = labState.frontCaption;
-            document.getElementById('lab-back-name').value = labState.backName;
-            document.getElementById('lab-back-num').value = labState.backNum;
+            const inputFLeft = document.getElementById('lab-front-left');
+            const inputFRight = document.getElementById('lab-front-right');
+            const inputBName = document.getElementById('lab-back-name');
+
+            if (inputFLeft) inputFLeft.value = labState.frontLeft;
+            if (inputFRight) inputFRight.value = labState.frontRight;
+            if (inputBName) inputBName.value = labState.backName;
         }
     }
 
     function labReset() {
         labState = JSON.parse(JSON.stringify(defaultLabState));
         labHistory = [JSON.stringify(labState)];
-        document.getElementById('lab-front-text').value = labState.frontCaption;
-        document.getElementById('lab-back-name').value = labState.backName;
-        document.getElementById('lab-back-num').value = labState.backNum;
+        
+        const inputFLeft = document.getElementById('lab-front-left');
+        const inputFRight = document.getElementById('lab-front-right');
+        const inputBName = document.getElementById('lab-back-name');
+
+        if (inputFLeft) inputFLeft.value = labState.frontLeft;
+        if (inputFRight) inputFRight.value = labState.frontRight;
+        if (inputBName) inputBName.value = labState.backName;
+        
         renderLabState();
     }
 
@@ -2500,9 +2526,13 @@
         document.getElementById('overlay-back-text').classList.toggle('hidden', isFront);
 
         // Render Values
-        document.getElementById('lab-front-text-display').textContent = labState.frontCaption;
-        document.getElementById('lab-back-name-display').textContent = labState.backName;
-        document.getElementById('lab-back-num-display').textContent = labState.backNum;
+        const fLeft = document.getElementById('lab-front-left-display');
+        const fRight = document.getElementById('lab-front-right-display');
+        const bName = document.getElementById('lab-back-name-display');
+
+        if (fLeft) fLeft.textContent = labState.frontLeft;
+        if (fRight) fRight.textContent = labState.frontRight;
+        if (bName) bName.textContent = labState.backName;
 
         // Render Colors
         document.querySelectorAll('.overlay-text').forEach(el => el.style.color = labState.textColor);
