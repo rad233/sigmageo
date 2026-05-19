@@ -1384,23 +1384,27 @@
 
     try {
         fullCollection = JSON.parse(localStorage.getItem('hype_collection')) || [
-            { time: "$85", name: "Classic Logo Tee", collection: "Archive", imageSrc: "assets/shirt7-front.png" },
-            { time: "$120", name: "Street Culture Tote", collection: "Lifestyle", imageSrc: "assets/shirt8-front.png" },
-            { time: "$65", name: "Hype District Cap", collection: "Accessories", imageSrc: "assets/shirt6-front.png" },
-            { time: "$45", name: "Individuality Tank", collection: "Statement Piece", imageSrc: "assets/shirt5-front.png" }
+            { time: "$85", name: "Classic Logo Tee", collection: "Archive", imageSrc: "assets/shirt3-front.png" },
+            { time: "$120", name: "Street Culture Tote", collection: "Lifestyle", imageSrc: "assets/shirt4-front.png" },
+            { time: "$65", name: "Hype District Cap", collection: "Accessories", imageSrc: "assets/shirt2-front.png" },
+            { time: "$45", name: "Individuality Tank", collection: "Statement Piece", imageSrc: "assets/shirt1-front.png" }
         ];
     } catch (e) {
         console.error("Data corruption detected, resetting collection.");
         fullCollection = [
-            { time: "$85", name: "Classic Logo Tee", collection: "Archive", imageSrc: "assets/shirt7-front.png" }
+            { time: "$85", name: "Classic Logo Tee", collection: "Archive", imageSrc: "assets/shirt3-front.png" }
         ];
     }
 
     // Cache Migration: Automatically upgrade old .jpg URLs in localStorage to the new template images
     const upgradeImageUrl = (imgStr) => {
         if (!imgStr) return imgStr;
-        const match = imgStr.match(/assets\/(\d+)\.jpg$/);
-        if (match) return `assets/shirt${match[1]}-front.png`;
+        const match = imgStr.match(/(?:assets\/)?(\d+)\.jpg$/i);
+        if (match) {
+            const index = parseInt(match[1]);
+            const normalizedIndex = ((index - 1) % 4) + 1;
+            return `assets/shirt${normalizedIndex}-front.png`;
+        }
         return imgStr;
     };
     dropItems.forEach(item => { item.imageSrc = upgradeImageUrl(item.imageSrc); });
@@ -2389,10 +2393,13 @@
 
     function openCustomLab(productId = 'custom-1', templateIndex = 1) {
         currentLabProductId = productId;
+        // Normalize the index so products 5-8 reuse template shirts 1-4
+        const normalizedIndex = ((parseInt(templateIndex) - 1) % 4) + 1;
+        
         // Dynamically load the specific template based on the clicked product (e.g. shirt1-front.png)
         window.labTemplates = {
-            front: `assets/shirt${templateIndex}-front.png`,
-            back: `assets/shirt${templateIndex}-back.png`
+            front: `assets/shirt${normalizedIndex}-front.png`,
+            back: `assets/shirt${normalizedIndex}-back.png`
         };
         
         labState = JSON.parse(JSON.stringify(defaultLabState));
