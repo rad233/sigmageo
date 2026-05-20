@@ -1165,28 +1165,24 @@
                 <!-- HTML Live Overlays -->
                 <!-- Front Overlay -->
                 <div id="lab-overlay-front" class="absolute inset-0 z-20 pointer-events-none w-full h-full">
-                    <!-- SVG Armor Lines (V-shape stripes matching original design) -->
+                    <!-- SVG Armor Lines (V-shape blade stripes matching original design) -->
                     <svg class="absolute inset-0 w-full h-full" viewBox="0 0 400 533" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Left armor panel line -->
-                        <polygon points="108,155 118,155 145,390 135,390" fill="#3a3a3a" opacity="0.85"/>
-                        <!-- Left panel bottom tip -->
-                        <polygon points="135,390 145,390 141,415 139,415" fill="#3a3a3a" opacity="0.85"/>
-                        <!-- Right armor panel line -->
-                        <polygon points="292,155 282,155 255,390 265,390" fill="#3a3a3a" opacity="0.85"/>
-                        <!-- Right panel bottom tip -->
-                        <polygon points="265,390 255,390 259,415 261,415" fill="#3a3a3a" opacity="0.85"/>
+                        <!-- Left blade: top tip at ~(118,158), body shifts 73px rightward as it descends, bottom tip at (191,472) -->
+                        <path d="M 118,158 L 106,184 L 178,450 L 191,472 L 204,450 L 130,184 Z" fill="#3a3a3a" opacity="0.88"/>
+                        <!-- Right blade: mirror - top tip at (282,158), body shifts 73px leftward, bottom tip at (209,472) -->
+                        <path d="M 282,158 L 294,184 L 222,450 L 209,472 L 196,450 L 270,184 Z" fill="#3a3a3a" opacity="0.88"/>
                     </svg>
-                    <!-- Left Text (floating alongside left armor line) -->
-                    <div id="lab-text-left" class="absolute font-bold tracking-[0.2em] uppercase font-bebas text-[18px] origin-center whitespace-nowrap" style="color: gold; top: 54%; left: 33%; transform: translate(-50%, -50%) rotate(-104.5deg);">
+                    <!-- Left Text: sits alongside left blade, reads bottom-to-top -->
+                    <div id="lab-text-left" class="absolute font-bold tracking-[0.18em] uppercase font-bebas text-[17px] origin-center whitespace-nowrap" style="color: gold; top: 53%; left: 29%; transform: translate(-50%, -50%) rotate(-104deg);">
                         PAIN'S TEMPORARY
                     </div>
-                    <!-- Right Text (floating alongside right armor line) -->
-                    <div id="lab-text-right" class="absolute font-bold tracking-[0.2em] uppercase font-bebas text-[18px] origin-center whitespace-nowrap" style="color: gold; top: 54%; left: 67%; transform: translate(-50%, -50%) rotate(104.5deg);">
+                    <!-- Right Text: sits alongside right blade, reads top-to-bottom -->
+                    <div id="lab-text-right" class="absolute font-bold tracking-[0.18em] uppercase font-bebas text-[17px] origin-center whitespace-nowrap" style="color: gold; top: 53%; left: 71%; transform: translate(-50%, -50%) rotate(104deg);">
                         VICTORY'S FOREVER
                     </div>
-                    
+
                     <!-- Center Custom Logo Container -->
-                    <div id="lab-logo-container" class="absolute left-[35%] top-[30%] w-[30%] h-[30%] flex items-center justify-center">
+                    <div id="lab-logo-container" class="absolute left-[35%] top-[28%] w-[30%] h-[30%] flex items-center justify-center">
                         <img id="lab-logo-img" class="max-w-full max-h-full object-contain hidden" />
                     </div>
                 </div>
@@ -1195,20 +1191,18 @@
                 <div id="lab-overlay-back" class="absolute inset-0 z-20 pointer-events-none w-full h-full hidden">
                     <!-- SVG Shield/Armor Lines (back side matching original design) -->
                     <svg class="absolute inset-0 w-full h-full" viewBox="0 0 400 533" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Center vertical spine panel -->
-                        <polygon points="188,140 212,140 216,400 184,400" fill="#3a3a3a" opacity="0.85"/>
-                        <!-- Spine bottom tip -->
-                        <polygon points="184,400 216,400 202,440 198,440" fill="#3a3a3a" opacity="0.85"/>
-                        <!-- Left diagonal flanking line -->
-                        <polygon points="130,200 140,200 186,400 178,400" fill="#3a3a3a" opacity="0.7"/>
-                        <!-- Right diagonal flanking line -->
-                        <polygon points="270,200 260,200 214,400 222,400" fill="#3a3a3a" opacity="0.7"/>
+                        <!-- Center vertical spine panel: wide at top, tapers to pointed bottom -->
+                        <path d="M 200,148 L 190,165 L 186,400 L 200,460 L 214,400 L 210,165 Z" fill="#3a3a3a" opacity="0.88"/>
+                        <!-- Left flanking diagonal blade: from outer-left, converges toward spine bottom -->
+                        <path d="M 116,192 L 104,215 L 174,430 L 186,452 L 190,430 L 128,215 Z" fill="#3a3a3a" opacity="0.72"/>
+                        <!-- Right flanking diagonal blade: mirror -->
+                        <path d="M 284,192 L 296,215 L 226,430 L 214,452 L 210,430 L 272,215 Z" fill="#3a3a3a" opacity="0.72"/>
                     </svg>
                     <!-- Back Spine Text Stack (over the center spine) -->
-                    <div class="absolute left-[50%] top-[28%] transform -translate-x-1/2 flex flex-col items-center justify-start z-10">
-                        <!-- Georgian Cross Icon at top -->
-                        <div class="font-bebas text-[22px] mb-1" style="color: #a89060;">&#10010;</div>
-                        <div id="lab-back-name-letters" class="flex flex-col font-bold uppercase tracking-[0.2em] text-center text-[22px] leading-[1.3] font-bebas" style="color: gold;">
+                    <div class="absolute left-[50%] top-[26%] transform -translate-x-1/2 flex flex-col items-center justify-start z-10">
+                        <!-- Cross Icon at top -->
+                        <div class="font-bebas text-[20px] mb-0.5" style="color: #a89060;">&#10010;</div>
+                        <div id="lab-back-name-letters" class="flex flex-col font-bold uppercase tracking-[0.15em] text-center text-[20px] leading-[1.25] font-bebas" style="color: gold;">
                             <!-- Populated dynamically -->
                         </div>
                     </div>
@@ -2688,33 +2682,32 @@
         }
 
         if (isFront) {
-            // --- Draw Front Armor Panel Lines (V-shape stripes) ---
-            drawPoly([[108,155],[118,155],[145,390],[135,390]], '#3a3a3a', 0.85);
-            drawPoly([[135,390],[145,390],[141,415],[139,415]], '#3a3a3a', 0.85);
-            drawPoly([[292,155],[282,155],[255,390],[265,390]], '#3a3a3a', 0.85);
-            drawPoly([[265,390],[255,390],[259,415],[261,415]], '#3a3a3a', 0.85);
+            // --- Front: Left blade (top-tip at 118,158 → bottom-tip at 191,472, 73px horizontal shift) ---
+            drawPoly([[118,158],[106,184],[178,450],[191,472],[204,450],[130,184]], '#3a3a3a', 0.88);
+            // --- Front: Right blade (mirror) ---
+            drawPoly([[282,158],[294,184],[222,450],[209,472],[196,450],[270,184]], '#3a3a3a', 0.88);
 
-            // --- Draw Left Text (reads bottom-to-top) ---
+            // --- Draw Left Text (reads bottom-to-top, alongside left blade) ---
             ctx.save();
             ctx.fillStyle = txtColor;
-            ctx.font = 'bold 38px "Bebas Neue", sans-serif';
-            ctx.letterSpacing = '0.2em';
+            ctx.font = 'bold 36px "Bebas Neue", sans-serif';
+            ctx.letterSpacing = '0.18em';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.translate(canvas.width * 0.33, canvas.height * 0.54);
-            ctx.rotate(-104.5 * Math.PI / 180);
+            ctx.translate(canvas.width * 0.29, canvas.height * 0.53);
+            ctx.rotate(-104 * Math.PI / 180);
             ctx.fillText(labState.frontLeft.toUpperCase(), 0, 0);
             ctx.restore();
 
-            // --- Draw Right Text (reads top-to-bottom) ---
+            // --- Draw Right Text (reads top-to-bottom, alongside right blade) ---
             ctx.save();
             ctx.fillStyle = txtColor;
-            ctx.font = 'bold 38px "Bebas Neue", sans-serif';
-            ctx.letterSpacing = '0.2em';
+            ctx.font = 'bold 36px "Bebas Neue", sans-serif';
+            ctx.letterSpacing = '0.18em';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.translate(canvas.width * 0.67, canvas.height * 0.54);
-            ctx.rotate(104.5 * Math.PI / 180);
+            ctx.translate(canvas.width * 0.71, canvas.height * 0.53);
+            ctx.rotate(104 * Math.PI / 180);
             ctx.fillText(labState.frontRight.toUpperCase(), 0, 0);
             ctx.restore();
 
@@ -2725,35 +2718,36 @@
                 const w = 200 * labState.logoScale;
                 const h = (logo.height / logo.width) * w;
                 const x = (canvas.width / 2) - (w / 2) + parseInt(labState.logoX);
-                const y = (canvas.height * 0.35) - (h / 2) + parseInt(labState.logoY);
+                const y = (canvas.height * 0.33) - (h / 2) + parseInt(labState.logoY);
                 ctx.drawImage(logo, x, y, w, h);
             }
         } else {
-            // --- Draw Back Shield/Spine Armor Lines ---
-            drawPoly([[188,140],[212,140],[216,400],[184,400]], '#3a3a3a', 0.85);
-            drawPoly([[184,400],[216,400],[202,440],[198,440]], '#3a3a3a', 0.85);
-            drawPoly([[130,200],[140,200],[186,400],[178,400]], '#3a3a3a', 0.7);
-            drawPoly([[270,200],[260,200],[214,400],[222,400]], '#3a3a3a', 0.7);
+            // --- Back: Center spine panel (tapers to pointed bottom) ---
+            drawPoly([[200,148],[190,165],[186,400],[200,460],[214,400],[210,165]], '#3a3a3a', 0.88);
+            // --- Back: Left flanking diagonal blade ---
+            drawPoly([[116,192],[104,215],[174,430],[186,452],[190,430],[128,215]], '#3a3a3a', 0.72);
+            // --- Back: Right flanking diagonal blade (mirror) ---
+            drawPoly([[284,192],[296,215],[226,430],[214,452],[210,430],[272,215]], '#3a3a3a', 0.72);
 
-            // --- Draw Georgian Cross at top ---
+            // --- Draw Cross symbol at top of spine ---
             ctx.save();
             ctx.fillStyle = '#a89060';
-            ctx.font = 'bold 48px "Bebas Neue", sans-serif';
+            ctx.font = 'bold 52px "Bebas Neue", sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText('✛', canvas.width * 0.5, canvas.height * 0.26);
+            ctx.fillText('✛', canvas.width * 0.5, canvas.height * 0.24);
             ctx.restore();
 
             // --- Stack letters vertically down spine ---
             ctx.save();
             ctx.fillStyle = txtColor;
-            ctx.font = 'bold 48px "Bebas Neue", sans-serif';
+            ctx.font = 'bold 46px "Bebas Neue", sans-serif';
             ctx.letterSpacing = '0.15em';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             const chars = (labState.backName || '').toUpperCase().split('');
-            const spacing = 55;
-            let startY = canvas.height * 0.32;
+            const spacing = 52;
+            let startY = canvas.height * 0.30;
             chars.forEach((char, idx) => {
                 ctx.fillText(char, canvas.width * 0.5, startY + (idx * spacing));
             });
