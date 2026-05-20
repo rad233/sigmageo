@@ -1166,18 +1166,18 @@
                 <!-- Front Overlay -->
                 <div id="lab-overlay-front" class="absolute inset-0 z-20 pointer-events-none w-full h-full">
                     <svg viewBox="0 0 800 1066" class="absolute inset-0 w-full h-full">
-                        <!-- Left V-line highlight (colored) -->
+                        <!-- Left V-line highlight -->
                         <path id="svg-line-left" d="M 344,799 L 224,373" fill="none" stroke="gold" stroke-width="12" stroke-linecap="round" />
-                        <!-- Right V-line highlight (colored) -->
+                        <!-- Right V-line highlight -->
                         <path id="svg-line-right" d="M 576,373 L 456,799" fill="none" stroke="gold" stroke-width="12" stroke-linecap="round" />
 
                         <!-- Left Text along Left Path (bottom-to-top) -->
-                        <text font-family="'Bebas Neue', sans-serif" font-size="28" font-weight="bold" fill="gold" letter-spacing="4" text-anchor="middle">
+                        <text font-family="'Bebas Neue', sans-serif" font-size="24" font-weight="bold" fill="gold" letter-spacing="4" text-anchor="middle">
                             <textPath id="svg-text-left" href="#svg-line-left" startOffset="50%">PAIN'S TEMPORARY</textPath>
                         </text>
 
                         <!-- Right Text along Right Path (top-to-bottom) -->
-                        <text font-family="'Bebas Neue', sans-serif" font-size="28" font-weight="bold" fill="gold" letter-spacing="4" text-anchor="middle">
+                        <text font-family="'Bebas Neue', sans-serif" font-size="24" font-weight="bold" fill="gold" letter-spacing="4" text-anchor="middle">
                             <textPath id="svg-text-right" href="#svg-line-right" startOffset="50%">VICTORY'S FOREVER</textPath>
                         </text>
                     </svg>
@@ -1191,8 +1191,11 @@
                 <!-- Back Overlay -->
                 <div id="lab-overlay-back" class="absolute inset-0 z-20 pointer-events-none w-full h-full hidden">
                     <svg viewBox="0 0 800 1066" class="absolute inset-0 w-full h-full">
-                        <!-- Back Left V-line highlight (colored) -->
+                        <!-- Back Left V-line highlight -->
                         <path id="svg-back-line-left" d="M 344,799 L 224,373" fill="none" stroke="gold" stroke-width="12" stroke-linecap="round" />
+                        <!-- Back Right V-line highlight -->
+                        <path id="svg-back-line-right" d="M 576,373 L 456,799" fill="none" stroke="gold" stroke-width="12" stroke-linecap="round" />
+                    </svg>
                         <!-- Back Right V-line highlight (colored) -->
                         <path id="svg-back-line-right" d="M 576,373 L 456,799" fill="none" stroke="gold" stroke-width="12" stroke-linecap="round" />
                     </svg>
@@ -1307,10 +1310,6 @@
 
             <!-- Action Bottom -->
             <div class="p-6 border-t border-gray-100 bg-gray-50 space-y-3">
-                <button onclick="generateMockup()" class="w-full h-12 rounded-2xl bg-white border-2 border-black text-black font-black uppercase tracking-widest text-xs hover:bg-gray-100 transition-colors flex items-center justify-center gap-2">
-                    <i data-lucide="eye" class="w-4 h-4"></i>
-                    See Preview
-                </button>
                 <button onclick="addLabToCart()" class="w-full h-14 rounded-2xl bg-black text-white font-black uppercase tracking-widest text-sm hover:bg-gray-800 transition-colors shadow-lg flex items-center justify-center gap-2">
                     <i data-lucide="shopping-bag" class="w-5 h-5"></i>
                     Add Bespoke to Cart
@@ -2672,7 +2671,7 @@
         const color = labState.lineColor || '#c5a059';
         const txtColor = labState.textColor || '#c5a059';
 
-        // Draw V-Lines on Canvas
+        // Draw V-Lines on Canvas (Standard thickness)
         ctx.strokeStyle = color;
         ctx.lineWidth = 12;
         ctx.lineCap = 'round';
@@ -2691,7 +2690,7 @@
             // Draw Left Text (reads bottom-to-top, angle -105.7 deg)
             ctx.save();
             ctx.fillStyle = txtColor;
-            ctx.font = 'bold 28px "Bebas Neue", sans-serif';
+            ctx.font = 'bold 24px "Bebas Neue", sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.translate(284, 586);
@@ -2702,7 +2701,7 @@
             // Draw Right Text (reads top-to-bottom, angle 105.7 deg)
             ctx.save();
             ctx.fillStyle = txtColor;
-            ctx.font = 'bold 28px "Bebas Neue", sans-serif';
+            ctx.font = 'bold 24px "Bebas Neue", sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.translate(516, 586);
@@ -2742,8 +2741,9 @@
         if (loader) loader.classList.add('hidden');
     }
 
-    function addLabToCart() {
-        const generatedImg = document.getElementById('lab-shirt-img').src; // Save the generated mockup
+    async function addLabToCart() {
+        await generateMockup(); // Generates the final flat image
+        const generatedImg = document.getElementById('lab-shirt-img').src; 
         
         const item = {
             id: currentLabProductId + '-' + Date.now(),
@@ -2768,6 +2768,3 @@
 </body>
 
 </html>
-
-
-
