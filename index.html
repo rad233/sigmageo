@@ -1165,12 +1165,15 @@
                 <!-- HTML Live Overlays -->
                 <!-- Front Overlay -->
                 <div id="lab-overlay-front" class="absolute inset-0 z-20 pointer-events-none w-full h-full">
-                    <!-- V-Shape Lines SVG (front) -->
+                    <!-- Blade Panel Lines SVG (front) -->
+                    <!-- Each side: two parallel lines forming a narrow pointed blade/panel that tapers to a point at bottom center -->
                     <svg id="lab-lines-front" class="absolute inset-0 w-full h-full" viewBox="0 0 400 533" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Left diagonal line: from upper-left shoulder area down to center bottom -->
-                        <line x1="118" y1="170" x2="200" y2="490" stroke-width="6" stroke-linecap="round" id="vline-front-left" style="stroke: #555; opacity: 0.7;" />
-                        <!-- Right diagonal line: from upper-right shoulder area down to center bottom -->
-                        <line x1="282" y1="170" x2="200" y2="490" stroke-width="6" stroke-linecap="round" id="vline-front-right" style="stroke: #555; opacity: 0.7;" />
+                        <!-- LEFT BLADE: outer line and inner line converging to a point -->
+                        <line x1="100" y1="175" x2="196" y2="470" stroke-width="3.5" stroke-linecap="round" id="vline-front-left-outer" style="stroke: #555; opacity: 0.75;" />
+                        <line x1="120" y1="175" x2="200" y2="470" stroke-width="3.5" stroke-linecap="round" id="vline-front-left-inner" style="stroke: #555; opacity: 0.75;" />
+                        <!-- RIGHT BLADE: inner line and outer line converging to a point -->
+                        <line x1="280" y1="175" x2="204" y2="470" stroke-width="3.5" stroke-linecap="round" id="vline-front-right-inner" style="stroke: #555; opacity: 0.75;" />
+                        <line x1="300" y1="175" x2="208" y2="470" stroke-width="3.5" stroke-linecap="round" id="vline-front-right-outer" style="stroke: #555; opacity: 0.75;" />
                     </svg>
 
                     <!-- Left Text (floating parallel to gray line) -->
@@ -1190,12 +1193,14 @@
 
                 <!-- Back Overlay -->
                 <div id="lab-overlay-back" class="absolute inset-0 z-20 pointer-events-none w-full h-full hidden">
-                    <!-- V-Shape Lines SVG (back) -->
+                    <!-- Blade Panel Lines SVG (back) -->
                     <svg id="lab-lines-back" class="absolute inset-0 w-full h-full" viewBox="0 0 400 533" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Left diagonal line -->
-                        <line x1="118" y1="200" x2="200" y2="490" stroke-width="6" stroke-linecap="round" id="vline-back-left" style="stroke: #555; opacity: 0.7;" />
-                        <!-- Right diagonal line -->
-                        <line x1="282" y1="200" x2="200" y2="490" stroke-width="6" stroke-linecap="round" id="vline-back-right" style="stroke: #555; opacity: 0.7;" />
+                        <!-- LEFT BLADE -->
+                        <line x1="100" y1="200" x2="196" y2="475" stroke-width="3.5" stroke-linecap="round" id="vline-back-left-outer" style="stroke: #555; opacity: 0.75;" />
+                        <line x1="120" y1="200" x2="200" y2="475" stroke-width="3.5" stroke-linecap="round" id="vline-back-left-inner" style="stroke: #555; opacity: 0.75;" />
+                        <!-- RIGHT BLADE -->
+                        <line x1="280" y1="200" x2="204" y2="475" stroke-width="3.5" stroke-linecap="round" id="vline-back-right-inner" style="stroke: #555; opacity: 0.75;" />
+                        <line x1="300" y1="200" x2="208" y2="475" stroke-width="3.5" stroke-linecap="round" id="vline-back-right-outer" style="stroke: #555; opacity: 0.75;" />
                     </svg>
                     <!-- Back Spine Text Stack -->
                     <div class="absolute left-[50%] top-[34%] transform -translate-x-1/2 flex flex-col items-center justify-start">
@@ -2561,7 +2566,8 @@
         const txtColor = labState.textColor || '#c5a059';
 
         // Update SVG V-line colors
-        ['vline-front-left','vline-front-right','vline-back-left','vline-back-right'].forEach(id => {
+        ['vline-front-left-outer','vline-front-left-inner','vline-front-right-inner','vline-front-right-outer',
+         'vline-back-left-outer','vline-back-left-inner','vline-back-right-inner','vline-back-right-outer'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.style.stroke = color;
         });
@@ -2667,22 +2673,21 @@
         const txtColor = labState.textColor || '#c5a059';
 
         if (isFront) {
-            // Draw V-shape lines (front)
+            // Draw blade panel lines (front) — two parallel lines per side tapering to a sharp point
             ctx.save();
             ctx.strokeStyle = color;
-            ctx.lineWidth = 12;
+            ctx.lineWidth = 7;
             ctx.lineCap = 'round';
-            ctx.globalAlpha = 0.65;
-            // Left line: upper-left down to bottom center
-            ctx.beginPath();
-            ctx.moveTo(canvas.width * 0.295, canvas.height * 0.32);
-            ctx.lineTo(canvas.width * 0.5, canvas.height * 0.92);
-            ctx.stroke();
-            // Right line: upper-right down to bottom center
-            ctx.beginPath();
-            ctx.moveTo(canvas.width * 0.705, canvas.height * 0.32);
-            ctx.lineTo(canvas.width * 0.5, canvas.height * 0.92);
-            ctx.stroke();
+            ctx.globalAlpha = 0.7;
+            const W = canvas.width, H = canvas.height;
+            // LEFT BLADE outer line
+            ctx.beginPath(); ctx.moveTo(W * 0.25, H * 0.328); ctx.lineTo(W * 0.49, H * 0.881); ctx.stroke();
+            // LEFT BLADE inner line
+            ctx.beginPath(); ctx.moveTo(W * 0.30, H * 0.328); ctx.lineTo(W * 0.50, H * 0.881); ctx.stroke();
+            // RIGHT BLADE inner line
+            ctx.beginPath(); ctx.moveTo(W * 0.70, H * 0.328); ctx.lineTo(W * 0.51, H * 0.881); ctx.stroke();
+            // RIGHT BLADE outer line
+            ctx.beginPath(); ctx.moveTo(W * 0.75, H * 0.328); ctx.lineTo(W * 0.52, H * 0.881); ctx.stroke();
             ctx.globalAlpha = 1.0;
             ctx.restore();
 
@@ -2721,22 +2726,21 @@
                 ctx.drawImage(logo, x, y, w, h);
             }
         } else {
-            // Draw V-shape lines (back)
+            // Draw blade panel lines (back) — two parallel lines per side tapering to a sharp point
             ctx.save();
             ctx.strokeStyle = color;
-            ctx.lineWidth = 12;
+            ctx.lineWidth = 7;
             ctx.lineCap = 'round';
-            ctx.globalAlpha = 0.65;
-            // Left line
-            ctx.beginPath();
-            ctx.moveTo(canvas.width * 0.295, canvas.height * 0.375);
-            ctx.lineTo(canvas.width * 0.5, canvas.height * 0.92);
-            ctx.stroke();
-            // Right line
-            ctx.beginPath();
-            ctx.moveTo(canvas.width * 0.705, canvas.height * 0.375);
-            ctx.lineTo(canvas.width * 0.5, canvas.height * 0.92);
-            ctx.stroke();
+            ctx.globalAlpha = 0.7;
+            const W = canvas.width, H = canvas.height;
+            // LEFT BLADE outer
+            ctx.beginPath(); ctx.moveTo(W * 0.25, H * 0.375); ctx.lineTo(W * 0.49, H * 0.89); ctx.stroke();
+            // LEFT BLADE inner
+            ctx.beginPath(); ctx.moveTo(W * 0.30, H * 0.375); ctx.lineTo(W * 0.50, H * 0.89); ctx.stroke();
+            // RIGHT BLADE inner
+            ctx.beginPath(); ctx.moveTo(W * 0.70, H * 0.375); ctx.lineTo(W * 0.51, H * 0.89); ctx.stroke();
+            // RIGHT BLADE outer
+            ctx.beginPath(); ctx.moveTo(W * 0.75, H * 0.375); ctx.lineTo(W * 0.52, H * 0.89); ctx.stroke();
             ctx.globalAlpha = 1.0;
             ctx.restore();
 
