@@ -1159,14 +1159,57 @@
 
             <!-- The Shirt Container -->
             <div class="relative w-full max-w-[400px] aspect-[3/4] flex items-center justify-center">
-                <!-- Background Shirt Image & Canvas output -->
-                <img id="lab-shirt-img" src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=800" alt="Custom Shirt Mockup" class="absolute inset-0 w-full h-full object-contain pointer-events-none z-10 drop-shadow-2xl transition-opacity duration-300" />
+                <!-- Background Shirt Image -->
+                <img id="lab-shirt-img" src="assets/shirt-front-blank.png" alt="Custom Shirt Mockup" class="absolute inset-0 w-full h-full object-contain pointer-events-none z-10 drop-shadow-2xl transition-opacity duration-300" />
                 
-                <!-- Hidden Canvas for rendering the mockup -->
+                <!-- SVG & HTML Live Overlays -->
+                <!-- Front Overlay -->
+                <div id="lab-overlay-front" class="absolute inset-0 z-20 pointer-events-none w-full h-full">
+                    <svg viewBox="0 0 800 1066" class="absolute inset-0 w-full h-full">
+                        <!-- Left V-line highlight (colored) -->
+                        <path id="svg-line-left" d="M 344,799 L 224,373" fill="none" stroke="gold" stroke-width="12" stroke-linecap="round" />
+                        <!-- Right V-line highlight (colored) -->
+                        <path id="svg-line-right" d="M 576,373 L 456,799" fill="none" stroke="gold" stroke-width="12" stroke-linecap="round" />
+
+                        <!-- Left Text along Left Path (bottom-to-top) -->
+                        <text font-family="'Bebas Neue', sans-serif" font-size="28" font-weight="bold" fill="gold" letter-spacing="4" text-anchor="middle">
+                            <textPath id="svg-text-left" href="#svg-line-left" startOffset="50%">PAIN'S TEMPORARY</textPath>
+                        </text>
+
+                        <!-- Right Text along Right Path (top-to-bottom) -->
+                        <text font-family="'Bebas Neue', sans-serif" font-size="28" font-weight="bold" fill="gold" letter-spacing="4" text-anchor="middle">
+                            <textPath id="svg-text-right" href="#svg-line-right" startOffset="50%">VICTORY'S FOREVER</textPath>
+                        </text>
+                    </svg>
+                    
+                    <!-- Center Custom Logo Container -->
+                    <div id="lab-logo-container" class="absolute left-[35%] top-[30%] w-[30%] h-[30%] flex items-center justify-center">
+                        <img id="lab-logo-img" class="max-w-full max-h-full object-contain hidden" />
+                    </div>
+                </div>
+
+                <!-- Back Overlay -->
+                <div id="lab-overlay-back" class="absolute inset-0 z-20 pointer-events-none w-full h-full hidden">
+                    <svg viewBox="0 0 800 1066" class="absolute inset-0 w-full h-full">
+                        <!-- Back Left V-line highlight (colored) -->
+                        <path id="svg-back-line-left" d="M 344,799 L 224,373" fill="none" stroke="gold" stroke-width="12" stroke-linecap="round" />
+                        <!-- Back Right V-line highlight (colored) -->
+                        <path id="svg-back-line-right" d="M 576,373 L 456,799" fill="none" stroke="gold" stroke-width="12" stroke-linecap="round" />
+                    </svg>
+
+                    <!-- Back Spine Text Stack -->
+                    <div class="absolute left-[40%] top-[34%] w-[20%] h-[50%] flex flex-col items-center justify-start">
+                        <div id="lab-back-name-letters" class="flex flex-col font-bold uppercase tracking-[0.2em] text-center text-[22px] leading-[1.3] font-bebas" style="color: gold; font-family: 'Bebas Neue', sans-serif;">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Hidden Canvas for rendering final mockup for checkout -->
                 <canvas id="preview-canvas" width="800" height="1066" class="hidden"></canvas>
                 
                 <!-- Loading State overlay -->
-                <div id="preview-loader" class="absolute inset-0 z-20 flex items-center justify-center bg-gray-100/80 backdrop-blur-sm hidden">
+                <div id="preview-loader" class="absolute inset-0 z-30 flex items-center justify-center bg-gray-100/80 backdrop-blur-sm hidden">
                     <div class="flex flex-col items-center gap-2">
                         <i data-lucide="loader-2" class="w-8 h-8 animate-spin text-black"></i>
                         <span class="text-xs font-bold uppercase tracking-widest text-black">Generating Preview...</span>
@@ -2425,10 +2468,9 @@
         // Normalize the index so products 5-8 reuse template shirts 1-4
         const normalizedIndex = ((parseInt(templateIndex) - 1) % 4) + 1;
         
-        // Dynamically load the specific template based on the clicked product (e.g. shirt1-front.png)
         window.labTemplates = {
-            front: `assets/shirt${normalizedIndex}-front.png`,
-            back: `assets/shirt${normalizedIndex}-back.png`
+            front: 'assets/shirt-front-blank.png',
+            back: 'assets/shirt-back-blank.png'
         };
         
         labState = JSON.parse(JSON.stringify(defaultLabState));
@@ -2449,8 +2491,7 @@
 
     function updateLabState(key, value, saveHistory = true) {
         labState[key] = value;
-        // Do NOT automatically call renderLabState() here because we want manual "See Preview"
-        if (key === 'view') renderLabState(); // Only render immediately if switching views
+        renderLabState(); // Instant real-time update
         
         if (saveHistory) {
             // Debounce history save for sliders, immediate for clicks
@@ -2506,7 +2547,6 @@
     }
 
     function renderLabState() {
-        // Render View
         const isFront = labState.view === 'front';
         document.getElementById('btn-view-front').className = isFront ? 'px-6 py-2 rounded-full text-xs font-bold bg-black text-white transition-all' : 'px-6 py-2 rounded-full text-xs font-bold text-gray-500 hover:text-black transition-all';
         document.getElementById('btn-view-back').className = !isFront ? 'px-6 py-2 rounded-full text-xs font-bold bg-black text-white transition-all' : 'px-6 py-2 rounded-full text-xs font-bold text-gray-500 hover:text-black transition-all';
@@ -2514,12 +2554,75 @@
         document.getElementById('lab-controls-front').classList.toggle('hidden', !isFront);
         document.getElementById('lab-controls-back').classList.toggle('hidden', isFront);
         
-        // Reset the image to the original template so they don't see an outdated preview while changing options
-        document.getElementById('lab-shirt-img').src = isFront ? window.labTemplates.front : window.labTemplates.back;
+        // Show the SVG live overlays during active customization
+        const overlayFront = document.getElementById('lab-overlay-front');
+        const overlayBack = document.getElementById('lab-overlay-back');
+        if (overlayFront) overlayFront.classList.toggle('hidden', !isFront);
+        if (overlayBack) overlayBack.classList.toggle('hidden', isFront);
+
+        // Update SVG line colors
+        const color = labState.lineColor || '#c5a059';
+        const txtColor = labState.textColor || '#c5a059';
+        
+        if (isFront) {
+            const lineLeft = document.getElementById('svg-line-left');
+            const lineRight = document.getElementById('svg-line-right');
+            const textLeft = document.getElementById('svg-text-left');
+            const textRight = document.getElementById('svg-text-right');
+            
+            if (lineLeft) lineLeft.setAttribute('stroke', color);
+            if (lineRight) lineRight.setAttribute('stroke', color);
+            if (textLeft) {
+                textLeft.textContent = labState.frontLeft.toUpperCase();
+                textLeft.parentElement.setAttribute('fill', txtColor);
+            }
+            if (textRight) {
+                textRight.textContent = labState.frontRight.toUpperCase();
+                textRight.parentElement.setAttribute('fill', txtColor);
+            }
+            
+            // Custom uploaded logo update
+            const logoImg = document.getElementById('lab-logo-img');
+            const logoContainer = document.getElementById('lab-logo-container');
+            if (logoImg && logoContainer) {
+                if (labState.logoSrc) {
+                    logoImg.src = labState.logoSrc;
+                    logoImg.style.transform = `translate(${labState.logoX}px, ${labState.logoY}px) scale(${labState.logoScale})`;
+                    logoImg.classList.remove('hidden');
+                } else {
+                    logoImg.classList.add('hidden');
+                }
+            }
+        } else {
+            const lineBackLeft = document.getElementById('svg-back-line-left');
+            const lineBackRight = document.getElementById('svg-back-line-right');
+            if (lineBackLeft) lineBackLeft.setAttribute('stroke', color);
+            if (lineBackRight) lineBackRight.setAttribute('stroke', color);
+            
+            // Stack letters vertically for "YOUR NAME"
+            const nameLettersContainer = document.getElementById('lab-back-name-letters');
+            if (nameLettersContainer) {
+                nameLettersContainer.innerHTML = '';
+                nameLettersContainer.style.color = txtColor;
+                const chars = (labState.backName || '').toUpperCase().split('');
+                chars.forEach(char => {
+                    const letterSpan = document.createElement('span');
+                    letterSpan.textContent = char;
+                    nameLettersContainer.appendChild(letterSpan);
+                });
+            }
+        }
+
+        // Reset display image to base template
+        const imgDisplay = document.getElementById('lab-shirt-img');
+        if (imgDisplay) {
+            imgDisplay.src = isFront ? window.labTemplates.front : window.labTemplates.back;
+            imgDisplay.style.opacity = '1';
+        }
     }
 
     let cachedBaseShirts = { front: null, back: null };
-    let cachedLogoMap = {}; // Cache uploaded logos to prevent flickering
+    let cachedLogoMap = {}; 
 
     async function loadImg(src) {
         return new Promise((resolve, reject) => {
@@ -2531,7 +2634,7 @@
                 canvas.width = 800; canvas.height = 1066;
                 const ctx = canvas.getContext('2d');
                 ctx.fillStyle = '#111'; ctx.fillRect(0,0,800,1066);
-                resolve(canvas); // Fallback
+                resolve(canvas);
             };
             img.src = src;
         });
@@ -2548,9 +2651,15 @@
         if (loader) loader.classList.remove('hidden');
         imgDisplay.style.opacity = '0.5';
 
+        // Hide overlays so we only show the final flat canvas image
+        const overlayFront = document.getElementById('lab-overlay-front');
+        const overlayBack = document.getElementById('lab-overlay-back');
+        if (overlayFront) overlayFront.classList.add('hidden');
+        if (overlayBack) overlayBack.classList.add('hidden');
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        // Load the EXACT ORIGINAL SHIRT uploaded by the user to preserve authentic fabric and lighting
+        // Load background blank template shirt
         const templateSrc = isFront ? window.labTemplates.front : window.labTemplates.back;
         
         if (!cachedBaseShirts[labState.view]) {
@@ -2560,46 +2669,48 @@
         const baseShirt = cachedBaseShirts[labState.view];
         ctx.drawImage(baseShirt, 0, 0, canvas.width, canvas.height);
         
-        // Custom Drawing Logic
+        const color = labState.lineColor || '#c5a059';
+        const txtColor = labState.textColor || '#c5a059';
+
+        // Draw V-Lines on Canvas
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 12;
+        ctx.lineCap = 'round';
+        
+        ctx.beginPath();
+        ctx.moveTo(344, 799);
+        ctx.lineTo(224, 373);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(576, 373);
+        ctx.lineTo(456, 799);
+        ctx.stroke();
+
         if (isFront) {
-            // Overpaint the old lines with the NEW thick colored lines to completely hide the old baked-in text
-            ctx.strokeStyle = labState.lineColor || labState.textColor;
-            ctx.lineWidth = 42; // Extremely thick line to fully bury the old text track
-            ctx.lineCap = 'butt'; // Flat ends to match the original style
-            
-            // Left Overpaint Line
-            ctx.beginPath();
-            ctx.moveTo(canvas.width * 0.44, canvas.height * 0.40);
-            ctx.lineTo(canvas.width * 0.28, canvas.height * 0.82);
-            ctx.stroke();
-            
-            // Right Overpaint Line
-            ctx.beginPath();
-            ctx.moveTo(canvas.width * 0.56, canvas.height * 0.40);
-            ctx.lineTo(canvas.width * 0.72, canvas.height * 0.82);
-            ctx.stroke();
-            
-            // Draw NEW Text exactly on top of the newly painted line
-            ctx.fillStyle = labState.textColor;
-            ctx.font = 'bold 32px "Bebas Neue", sans-serif'; // Reduced font size to fit neatly inside the line track
+            // Draw Left Text (reads bottom-to-top, angle -105.7 deg)
+            ctx.save();
+            ctx.fillStyle = txtColor;
+            ctx.font = 'bold 28px "Bebas Neue", sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            
-            // Left Text
-            ctx.save();
-            ctx.translate(canvas.width * 0.33, canvas.height * 0.61);
-            ctx.rotate(-68 * Math.PI / 180); 
+            ctx.translate(284, 586);
+            ctx.rotate(-105.7 * Math.PI / 180);
             ctx.fillText(labState.frontLeft.toUpperCase(), 0, 0);
             ctx.restore();
-            
-            // Right Text
+
+            // Draw Right Text (reads top-to-bottom, angle 105.7 deg)
             ctx.save();
-            ctx.translate(canvas.width * 0.67, canvas.height * 0.61);
-            ctx.rotate(68 * Math.PI / 180); 
+            ctx.fillStyle = txtColor;
+            ctx.font = 'bold 28px "Bebas Neue", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.translate(516, 586);
+            ctx.rotate(105.7 * Math.PI / 180);
             ctx.fillText(labState.frontRight.toUpperCase(), 0, 0);
             ctx.restore();
             
-            // Uploaded Center Logo
+            // Uploaded Logo
             if (labState.logoSrc) {
                 if (!cachedLogoMap[labState.logoSrc]) cachedLogoMap[labState.logoSrc] = await loadImg(labState.logoSrc);
                 const logo = cachedLogoMap[labState.logoSrc];
@@ -2609,37 +2720,23 @@
                 const y = (canvas.height * 0.35) - (h / 2) + parseInt(labState.logoY);
                 ctx.drawImage(logo, x, y, w, h);
             }
-            
         } else {
-            // Back spine overpaint
-            ctx.strokeStyle = '#18181b'; // Dark color matching the shirt back to hide old name
-            ctx.lineWidth = 80;
-            ctx.lineCap = 'round';
-            ctx.beginPath();
-            ctx.moveTo(canvas.width * 0.5, canvas.height * 0.3);
-            ctx.lineTo(canvas.width * 0.5, canvas.height * 0.8);
-            ctx.stroke();
-
-            // Back spine custom text
-            ctx.fillStyle = labState.textColor;
-            ctx.font = 'bold 64px "Bebas Neue", sans-serif';
+            // Stack letters vertically down spine
+            ctx.save();
+            ctx.fillStyle = txtColor;
+            ctx.font = 'bold 36px "Bebas Neue", sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            
-            ctx.save();
-            ctx.translate(canvas.width * 0.5, canvas.height * 0.45);
-            ctx.rotate(90 * Math.PI / 180);
-            const chars = labState.backName.toUpperCase().split('');
-            const spacing = 50;
-            let currentX = -(chars.length * spacing) / 2 + (spacing/2);
-            chars.forEach(char => {
-                ctx.fillText(char, currentX, 0);
-                currentX += spacing;
+            const chars = (labState.backName || '').toUpperCase().split('');
+            const spacing = 45;
+            let startY = canvas.height * 0.34;
+            chars.forEach((char, idx) => {
+                ctx.fillText(char, canvas.width * 0.5, startY + (idx * spacing));
             });
             ctx.restore();
         }
         
-        // Output canvas to image display
+        // Output flat canvas to image display
         imgDisplay.src = canvas.toDataURL('image/png');
         imgDisplay.style.opacity = '1';
         if (loader) loader.classList.add('hidden');
