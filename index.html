@@ -61,7 +61,7 @@
             font-family: 'Playfair Display', serif;
         }
 
-        .font-logo {
+        .font-logo, .font-bebas {
             font-family: 'Bebas Neue', sans-serif;
         }
 
@@ -1166,11 +1166,11 @@
                 <!-- Front Overlay -->
                 <div id="lab-overlay-front" class="absolute inset-0 z-20 pointer-events-none w-full h-full">
                     <!-- Left Text (floating parallel to gray line) -->
-                    <div id="lab-text-left" class="absolute font-bold tracking-[0.2em] uppercase font-bebas text-[20px] origin-center whitespace-nowrap" style="color: gold; top: 55%; left: 30%; transform: translate(-50%, -50%) rotate(-74.3deg);">
+                    <div id="lab-text-left" class="absolute font-bold tracking-[0.2em] uppercase font-bebas text-[20px] origin-center whitespace-nowrap" style="color: gold; top: 54%; left: 36.5%; transform: translate(-50%, -50%) rotate(-104.5deg);">
                         PAIN'S TEMPORARY
                     </div>
                     <!-- Right Text (floating parallel to gray line) -->
-                    <div id="lab-text-right" class="absolute font-bold tracking-[0.2em] uppercase font-bebas text-[20px] origin-center whitespace-nowrap" style="color: gold; top: 55%; right: 30%; transform: translate(50%, -50%) rotate(74.3deg);">
+                    <div id="lab-text-right" class="absolute font-bold tracking-[0.2em] uppercase font-bebas text-[20px] origin-center whitespace-nowrap" style="color: gold; top: 54%; left: 63.5%; transform: translate(-50%, -50%) rotate(104.5deg);">
                         VICTORY'S FOREVER
                     </div>
                     
@@ -2649,22 +2649,24 @@
             // Draw Left Text (reads bottom-to-top, floating cleanly)
             ctx.save();
             ctx.fillStyle = txtColor;
-            ctx.font = 'bold 24px "Bebas Neue", sans-serif';
+            ctx.font = 'bold 38px "Bebas Neue", sans-serif';
+            ctx.letterSpacing = '0.2em';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.translate(canvas.width * 0.30, 586);
-            ctx.rotate(-74.3 * Math.PI / 180);
+            ctx.translate(canvas.width * 0.365, canvas.height * 0.54);
+            ctx.rotate(-104.5 * Math.PI / 180);
             ctx.fillText(labState.frontLeft.toUpperCase(), 0, 0);
             ctx.restore();
 
             // Draw Right Text (reads top-to-bottom, floating cleanly)
             ctx.save();
             ctx.fillStyle = txtColor;
-            ctx.font = 'bold 24px "Bebas Neue", sans-serif';
+            ctx.font = 'bold 38px "Bebas Neue", sans-serif';
+            ctx.letterSpacing = '0.2em';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.translate(canvas.width * 0.70, 586);
-            ctx.rotate(74.3 * Math.PI / 180);
+            ctx.translate(canvas.width * 0.635, canvas.height * 0.54);
+            ctx.rotate(104.5 * Math.PI / 180);
             ctx.fillText(labState.frontRight.toUpperCase(), 0, 0);
             ctx.restore();
             
