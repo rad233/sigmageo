@@ -1162,25 +1162,17 @@
                 <!-- Background Shirt Image -->
                 <img id="lab-shirt-img" src="assets/shirt-front-blank.png" alt="Custom Shirt Mockup" class="absolute inset-0 w-full h-full object-contain pointer-events-none z-10 drop-shadow-2xl transition-opacity duration-300" />
                 
-                <!-- SVG & HTML Live Overlays -->
+                <!-- HTML Live Overlays -->
                 <!-- Front Overlay -->
                 <div id="lab-overlay-front" class="absolute inset-0 z-20 pointer-events-none w-full h-full">
-                    <svg viewBox="0 0 800 1066" class="absolute inset-0 w-full h-full">
-                        <!-- Left V-line highlight -->
-                        <path id="svg-line-left" d="M 344,799 L 224,373" fill="none" stroke="gold" stroke-width="12" stroke-linecap="round" />
-                        <!-- Right V-line highlight -->
-                        <path id="svg-line-right" d="M 576,373 L 456,799" fill="none" stroke="gold" stroke-width="12" stroke-linecap="round" />
-
-                        <!-- Left Text along Left Path (bottom-to-top) -->
-                        <text font-family="'Bebas Neue', sans-serif" font-size="24" font-weight="bold" fill="gold" letter-spacing="4" text-anchor="middle">
-                            <textPath id="svg-text-left" href="#svg-line-left" startOffset="50%">PAIN'S TEMPORARY</textPath>
-                        </text>
-
-                        <!-- Right Text along Right Path (top-to-bottom) -->
-                        <text font-family="'Bebas Neue', sans-serif" font-size="24" font-weight="bold" fill="gold" letter-spacing="4" text-anchor="middle">
-                            <textPath id="svg-text-right" href="#svg-line-right" startOffset="50%">VICTORY'S FOREVER</textPath>
-                        </text>
-                    </svg>
+                    <!-- Left Text (floating parallel to gray line) -->
+                    <div id="lab-text-left" class="absolute font-bold tracking-[0.2em] uppercase font-bebas text-[20px] origin-center whitespace-nowrap" style="color: gold; top: 55%; left: 30%; transform: translate(-50%, -50%) rotate(-74.3deg);">
+                        PAIN'S TEMPORARY
+                    </div>
+                    <!-- Right Text (floating parallel to gray line) -->
+                    <div id="lab-text-right" class="absolute font-bold tracking-[0.2em] uppercase font-bebas text-[20px] origin-center whitespace-nowrap" style="color: gold; top: 55%; right: 30%; transform: translate(50%, -50%) rotate(74.3deg);">
+                        VICTORY'S FOREVER
+                    </div>
                     
                     <!-- Center Custom Logo Container -->
                     <div id="lab-logo-container" class="absolute left-[35%] top-[30%] w-[30%] h-[30%] flex items-center justify-center">
@@ -1190,19 +1182,9 @@
 
                 <!-- Back Overlay -->
                 <div id="lab-overlay-back" class="absolute inset-0 z-20 pointer-events-none w-full h-full hidden">
-                    <svg viewBox="0 0 800 1066" class="absolute inset-0 w-full h-full">
-                        <!-- Back Left V-line highlight -->
-                        <path id="svg-back-line-left" d="M 344,799 L 224,373" fill="none" stroke="gold" stroke-width="12" stroke-linecap="round" />
-                        <!-- Back Right V-line highlight -->
-                        <path id="svg-back-line-right" d="M 576,373 L 456,799" fill="none" stroke="gold" stroke-width="12" stroke-linecap="round" />
-                    </svg>
-                        <!-- Back Right V-line highlight (colored) -->
-                        <path id="svg-back-line-right" d="M 576,373 L 456,799" fill="none" stroke="gold" stroke-width="12" stroke-linecap="round" />
-                    </svg>
-
                     <!-- Back Spine Text Stack -->
-                    <div class="absolute left-[40%] top-[34%] w-[20%] h-[50%] flex flex-col items-center justify-start">
-                        <div id="lab-back-name-letters" class="flex flex-col font-bold uppercase tracking-[0.2em] text-center text-[22px] leading-[1.3] font-bebas" style="color: gold; font-family: 'Bebas Neue', sans-serif;">
+                    <div class="absolute left-[50%] top-[34%] transform -translate-x-1/2 flex flex-col items-center justify-start">
+                        <div id="lab-back-name-letters" class="flex flex-col font-bold uppercase tracking-[0.2em] text-center text-[22px] leading-[1.3] font-bebas" style="color: gold;">
                             <!-- Populated dynamically -->
                         </div>
                     </div>
@@ -2559,25 +2541,21 @@
         if (overlayFront) overlayFront.classList.toggle('hidden', !isFront);
         if (overlayBack) overlayBack.classList.toggle('hidden', isFront);
 
-        // Update SVG line colors
+        // Update HTML text colors
         const color = labState.lineColor || '#c5a059';
         const txtColor = labState.textColor || '#c5a059';
         
         if (isFront) {
-            const lineLeft = document.getElementById('svg-line-left');
-            const lineRight = document.getElementById('svg-line-right');
-            const textLeft = document.getElementById('svg-text-left');
-            const textRight = document.getElementById('svg-text-right');
+            const textLeft = document.getElementById('lab-text-left');
+            const textRight = document.getElementById('lab-text-right');
             
-            if (lineLeft) lineLeft.setAttribute('stroke', color);
-            if (lineRight) lineRight.setAttribute('stroke', color);
             if (textLeft) {
                 textLeft.textContent = labState.frontLeft.toUpperCase();
-                textLeft.parentElement.setAttribute('fill', txtColor);
+                textLeft.style.color = txtColor;
             }
             if (textRight) {
                 textRight.textContent = labState.frontRight.toUpperCase();
-                textRight.parentElement.setAttribute('fill', txtColor);
+                textRight.style.color = txtColor;
             }
             
             // Custom uploaded logo update
@@ -2593,10 +2571,6 @@
                 }
             }
         } else {
-            const lineBackLeft = document.getElementById('svg-back-line-left');
-            const lineBackRight = document.getElementById('svg-back-line-right');
-            if (lineBackLeft) lineBackLeft.setAttribute('stroke', color);
-            if (lineBackRight) lineBackRight.setAttribute('stroke', color);
             
             // Stack letters vertically for "YOUR NAME"
             const nameLettersContainer = document.getElementById('lab-back-name-letters');
@@ -2671,41 +2645,26 @@
         const color = labState.lineColor || '#c5a059';
         const txtColor = labState.textColor || '#c5a059';
 
-        // Draw V-Lines on Canvas (Standard thickness)
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 12;
-        ctx.lineCap = 'round';
-        
-        ctx.beginPath();
-        ctx.moveTo(344, 799);
-        ctx.lineTo(224, 373);
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.moveTo(576, 373);
-        ctx.lineTo(456, 799);
-        ctx.stroke();
-
         if (isFront) {
-            // Draw Left Text (reads bottom-to-top, angle -105.7 deg)
+            // Draw Left Text (reads bottom-to-top, floating cleanly)
             ctx.save();
             ctx.fillStyle = txtColor;
             ctx.font = 'bold 24px "Bebas Neue", sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.translate(284, 586);
-            ctx.rotate(-105.7 * Math.PI / 180);
+            ctx.translate(canvas.width * 0.30, 586);
+            ctx.rotate(-74.3 * Math.PI / 180);
             ctx.fillText(labState.frontLeft.toUpperCase(), 0, 0);
             ctx.restore();
 
-            // Draw Right Text (reads top-to-bottom, angle 105.7 deg)
+            // Draw Right Text (reads top-to-bottom, floating cleanly)
             ctx.save();
             ctx.fillStyle = txtColor;
             ctx.font = 'bold 24px "Bebas Neue", sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.translate(516, 586);
-            ctx.rotate(105.7 * Math.PI / 180);
+            ctx.translate(canvas.width * 0.70, 586);
+            ctx.rotate(74.3 * Math.PI / 180);
             ctx.fillText(labState.frontRight.toUpperCase(), 0, 0);
             ctx.restore();
             
