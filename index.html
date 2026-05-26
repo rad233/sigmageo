@@ -135,6 +135,103 @@
             transition: all 0.4s ease;
         }
 
+        /* Dark mode overrides for Auth/Landing Page */
+        .auth-container {
+            background: #020203 !important;
+        }
+
+        .auth-container .glass-button {
+            background: linear-gradient(-75deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.08)) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            color: #ffffff !important;
+        }
+
+        .auth-container .glass-button:hover {
+            background: rgba(255, 255, 255, 0.15) !important;
+            border-color: rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.05) !important;
+        }
+
+        .auth-container .glass-input-wrap {
+            background: rgba(255, 255, 255, 0.02) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+
+        .auth-container .glass-input-wrap:focus-within {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-color: rgba(255, 255, 255, 0.18) !important;
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.02) !important;
+        }
+
+        .auth-container input, 
+        .auth-container textarea {
+            color: #ffffff !important;
+        }
+
+        .auth-container input::placeholder, 
+        .auth-container textarea::placeholder {
+            color: rgba(255, 255, 255, 0.35) !important;
+        }
+
+        /* Elegant Geometric Shapes Background Styling */
+        @keyframes shapeIntro {
+            0% {
+                opacity: 0;
+                transform: translateY(-150px) rotate(calc(var(--rotate) - 15deg));
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) rotate(var(--rotate));
+            }
+        }
+
+        @keyframes shapeFloat {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(15px);
+            }
+        }
+
+        .elegant-shape-wrap {
+            width: var(--width);
+            height: var(--height);
+            opacity: 0;
+            transform-origin: center;
+            animation: shapeIntro 2.4s cubic-bezier(0.23, 0.86, 0.39, 0.96) forwards;
+            animation-delay: var(--delay);
+            z-index: 0;
+        }
+
+        .elegant-shape-inner {
+            position: absolute;
+            inset: 0;
+            border-radius: 9999px;
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(255, 255, 255, 0.1);
+            animation: shapeFloat 12s ease-in-out infinite;
+            animation-delay: var(--delay);
+        }
+
+        .elegant-shape-inner::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 9999px;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.2), transparent 70%);
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .elegant-shape-wrap {
+                --width: calc(var(--width) * 0.65) !important;
+                --height: calc(var(--height) * 0.65) !important;
+            }
+        }
+
         /* Modal */
         .modal-overlay {
             position: fixed;
@@ -766,147 +863,152 @@
 
 
 <!-- Auth Container -->
-<div id="auth-container" class="auth-container min-h-screen flex items-center justify-center relative">
-    <!-- SVG Background -->
-    <div class="fixed inset-0 z-0 overflow-hidden">
-        <svg width="100%" height="100%" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg"
-            preserveAspectRatio="xMidYMid slice" class="absolute top-0 left-0 w-full h-full">
-            <defs>
-                <linearGradient id="rev_grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:var(--color-primary);stop-opacity:0.8" />
-                    <stop offset="100%" style="stop-color:var(--color-chart-3);stop-opacity:0.6" />
-                </linearGradient>
-                <linearGradient id="rev_grad2" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" style="stop-color:var(--color-chart-4);stop-opacity:0.9" />
-                    <stop offset="50%" style="stop-color:var(--color-secondary);stop-opacity:0.7" />
-                    <stop offset="100%" style="stop-color:var(--color-chart-1);stop-opacity:0.6" />
-                </linearGradient>
-                <radialGradient id="rev_grad3" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" style="stop-color:var(--color-destructive);stop-opacity:0.8" />
-                    <stop offset="100%" style="stop-color:var(--color-chart-5);stop-opacity:0.4" />
-                </radialGradient>
-                <filter id="rev_blur1" x="-50%" y="-50%" width="200%" height="200%">
-                    <feGaussianBlur stdDeviation="35" />
-                </filter>
-            </defs>
-            <g class="float-1">
-                <ellipse cx="200" cy="500" rx="250" ry="180" fill="url(#rev_grad1)" filter="url(#rev_blur1)"
-                    transform="rotate(-30 200 500)" />
-                <rect x="500" y="100" width="300" height="250" rx="80" fill="url(#rev_grad2)" filter="url(#rev_blur1)"
-                    transform="rotate(15 650 225)" />
-            </g>
-            <g class="float-2">
-                <circle cx="650" cy="450" r="150" fill="url(#rev_grad3)" filter="url(#rev_blur1)" opacity="0.7" />
-            </g>
-        </svg>
+<div id="auth-container" class="auth-container min-h-screen flex items-center justify-center relative bg-[#030303]">
+    <!-- Elegant Geometric Background -->
+    <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+        <!-- Ambient Blur Glows -->
+        <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/[0.05] via-transparent to-rose-500/[0.05] blur-3xl"></div>
+
+        <!-- Shape 1 (Indigo) -->
+        <div class="absolute left-[-10%] md:left-[-5%] top-[15%] md:top-[20%] elegant-shape-wrap" 
+             style="--delay: 0.3s; --rotate: 12deg; --width: 600px; --height: 140px;">
+            <div class="elegant-shape-inner bg-gradient-to-r from-indigo-500/[0.15] to-transparent"></div>
+        </div>
+
+        <!-- Shape 2 (Rose) -->
+        <div class="absolute right-[-5%] md:right-[0%] top-[70%] md:top-[75%] elegant-shape-wrap" 
+             style="--delay: 0.5s; --rotate: -15deg; --width: 500px; --height: 120px;">
+            <div class="elegant-shape-inner bg-gradient-to-r from-rose-500/[0.15] to-transparent"></div>
+        </div>
+
+        <!-- Shape 3 (Violet) -->
+        <div class="absolute left-[5%] md:left-[10%] bottom-[5%] md:bottom-[10%] elegant-shape-wrap" 
+             style="--delay: 0.4s; --rotate: -8deg; --width: 300px; --height: 80px;">
+            <div class="elegant-shape-inner bg-gradient-to-r from-violet-500/[0.15] to-transparent"></div>
+        </div>
+
+        <!-- Shape 4 (Amber) -->
+        <div class="absolute right-[15%] md:right-[20%] top-[10%] md:top-[15%] elegant-shape-wrap" 
+             style="--delay: 0.6s; --rotate: 20deg; --width: 200px; --height: 60px;">
+            <div class="elegant-shape-inner bg-gradient-to-r from-amber-500/[0.15] to-transparent"></div>
+        </div>
+
+        <!-- Shape 5 (Cyan) -->
+        <div class="absolute left-[20%] md:left-[25%] top-[5%] md:top-[10%] elegant-shape-wrap" 
+             style="--delay: 0.7s; --rotate: -25deg; --width: 150px; --height: 40px;">
+            <div class="elegant-shape-inner bg-gradient-to-r from-cyan-500/[0.15] to-transparent"></div>
+        </div>
+
+        <!-- Ambient Masks (Top and Bottom Gradient overlays) -->
+        <div class="absolute inset-0 bg-gradient-to-t from-[#030303] via-transparent to-[#030303]/80"></div>
     </div>
 
     <div class="fixed top-4 left-0 right-0 z-50 flex flex-col items-center">
-        <img src="logo.png" alt="Logo" class="h-24 w-auto drop-shadow-[0_0_15px_rgba(0,0,0,0.1)]">
+        <img src="logo.png" alt="Logo" class="h-24 w-auto drop-shadow-[0_0_20px_rgba(255,255,255,0.15)]">
     </div>
 
     <div class="relative z-10 w-full max-w-[360px] min-h-[600px] px-8 flex items-center">
         <div id="step-email" class="step flex flex-col items-center gap-6 text-center">
-            <h2 class="font-serif text-5xl text-black leading-tight">Create your Profile</h2>
+            <h2 class="font-serif text-5xl text-white leading-tight">Create your Profile</h2>
 
             <div class="space-y-4 w-full">
                 <!-- Full Name -->
                 <div class="glass-input-wrap w-full rounded-full flex items-center px-6 py-1 shadow-sm">
                     <input id="input-name" type="text" placeholder="Full Name"
-                        class="bg-transparent flex-1 py-4 px-3 outline-none text-black font-medium">
+                        class="bg-transparent flex-1 py-4 px-3 outline-none text-white font-medium placeholder:text-zinc-500">
                 </div>
 
                 <!-- Email -->
                 <div class="glass-input-wrap w-full rounded-full flex items-center px-6 py-1 shadow-sm">
                     <input id="input-email" type="email" placeholder="Email Address"
-                        class="bg-transparent flex-1 py-4 px-3 outline-none text-black font-medium">
+                        class="bg-transparent flex-1 py-4 px-3 outline-none text-white font-medium placeholder:text-zinc-500">
                 </div>
 
                 <!-- Shipping Address -->
                 <div class="glass-input-wrap w-full rounded-[2rem] flex items-start px-6 py-2 shadow-sm">
                     <textarea id="input-address" placeholder="Shipping Address" rows="2"
-                        class="bg-transparent flex-1 py-4 px-3 outline-none text-black font-medium resize-none"></textarea>
+                        class="bg-transparent flex-1 py-4 px-3 outline-none text-white font-medium resize-none placeholder:text-zinc-500"></textarea>
                 </div>
             </div>
 
             <button id="btn-to-password"
-                class="glass-button w-full py-4 rounded-full text-black font-bold shadow-lg opacity-30 pointer-events-none transition-all">Next
+                class="glass-button w-full py-4 rounded-full text-white font-bold shadow-lg opacity-30 pointer-events-none transition-all">Next
                 Step</button>
 
             <button id="toggle-to-signin"
-                class="text-sm font-semibold text-gray-500 hover:text-black transition-colors">Already have an account?
-                <span class="text-black underline">Sign In</span></button>
+                class="text-sm font-semibold text-zinc-400 hover:text-white transition-colors">Already have an account?
+                <span class="text-white underline">Sign In</span></button>
         </div>
 
         <div id="step-signin" class="step flex flex-col items-center gap-10 text-center">
-            <h2 class="font-serif text-5xl text-black">Welcome Back</h2>
+            <h2 class="font-serif text-5xl text-white">Welcome Back</h2>
             <div class="space-y-4 w-full">
                 <div class="glass-input-wrap w-full rounded-full flex items-center px-6 py-1.5 shadow-sm">
                     <input id="signin-email" type="email" placeholder="Email Address"
-                        class="bg-transparent flex-1 py-4 px-3 outline-none text-black font-medium">
+                        class="bg-transparent flex-1 py-4 px-3 outline-none text-white font-medium placeholder:text-zinc-500">
                 </div>
                 <div class="glass-input-wrap w-full rounded-full flex items-center px-6 py-1.5 shadow-sm">
                     <input id="signin-password" type="password" placeholder="Password"
-                        class="bg-transparent flex-1 py-4 px-3 outline-none text-black font-medium">
+                        class="bg-transparent flex-1 py-4 px-3 outline-none text-white font-medium placeholder:text-zinc-500">
                 </div>
             </div>
             <button id="btn-signin-submit"
-                class="glass-button w-full py-4 rounded-full text-black font-bold shadow-lg">Sign In</button>
+                class="glass-button w-full py-4 rounded-full text-white font-bold shadow-lg">Sign In</button>
             <button id="toggle-to-signup"
-                class="text-sm font-semibold text-gray-500 hover:text-black transition-colors">New here? <span
-                    class="text-black underline">Create Account</span></button>
+                class="text-sm font-semibold text-zinc-400 hover:text-white transition-colors">New here? <span
+                    class="text-white underline">Create Account</span></button>
         </div>
 
         <div id="step-password" class="step flex flex-col items-center gap-10 text-center">
-            <h2 class="font-serif text-4xl text-black">Create password</h2>
+            <h2 class="font-serif text-4xl text-white">Create password</h2>
             <div class="glass-input-wrap w-full rounded-full flex items-center px-6 py-1.5 shadow-sm">
                 <input id="input-password" type="password" placeholder="Password"
-                    class="bg-transparent flex-1 py-4 px-3 outline-none text-black font-medium">
+                    class="bg-transparent flex-1 py-4 px-3 outline-none text-white font-medium placeholder:text-zinc-500">
                 <button id="btn-to-confirm"
-                    class="glass-button w-11 h-11 rounded-full flex items-center justify-center text-black opacity-0 pointer-events-none scale-90"><i
+                    class="glass-button w-11 h-11 rounded-full flex items-center justify-center text-white opacity-0 pointer-events-none scale-90"><i
                         data-lucide="arrow-right" class="w-5 h-5"></i></button>
             </div>
-            <button class="btn-back text-gray-400 text-xs font-semibold">GO BACK</button>
+            <button class="btn-back text-zinc-500 hover:text-zinc-300 text-xs font-semibold uppercase tracking-wider">GO BACK</button>
         </div>
 
         <div id="step-confirm" class="step flex flex-col items-center gap-10 text-center">
-            <h2 class="font-serif text-4xl text-black">Confirm password</h2>
+            <h2 class="font-serif text-4xl text-white">Confirm password</h2>
             <div class="glass-input-wrap w-full rounded-full flex items-center px-6 py-1.5 shadow-sm">
                 <input id="input-confirm" type="password" placeholder="Confirm Password"
-                    class="bg-transparent flex-1 py-4 px-3 outline-none text-black font-medium">
+                    class="bg-transparent flex-1 py-4 px-3 outline-none text-white font-medium placeholder:text-zinc-500">
                 <button id="btn-submit"
-                    class="glass-button w-11 h-11 rounded-full flex items-center justify-center text-black opacity-0 pointer-events-none scale-90"><i
+                    class="glass-button w-11 h-11 rounded-full flex items-center justify-center text-white opacity-0 pointer-events-none scale-90"><i
                         data-lucide="arrow-right" class="w-5 h-5"></i></button>
             </div>
-            <button class="btn-back-pass text-gray-400 text-xs font-semibold">GO BACK</button>
+            <button class="btn-back-pass text-zinc-500 hover:text-zinc-300 text-xs font-semibold uppercase tracking-wider">GO BACK</button>
         </div>
 
         <div id="step-admin" class="step flex flex-col items-center gap-10 text-center">
-            <div class="bg-black text-white p-4 rounded-2xl shadow-xl">
-                <i data-lucide="shield-check" class="w-10 h-10"></i>
+            <div class="bg-white/5 border border-white/10 text-white p-4 rounded-2xl shadow-xl backdrop-blur-md">
+                <i data-lucide="shield-check" class="w-10 h-10 text-white"></i>
             </div>
-            <h2 class="font-serif text-4xl text-black">Admin Portal</h2>
+            <h2 class="font-serif text-4xl text-white">Admin Portal</h2>
             <div class="glass-input-wrap w-full rounded-full flex items-center px-6 py-1.5 shadow-sm">
                 <input id="admin-key" type="password" placeholder="Enter Admin Key"
-                    class="bg-transparent flex-1 py-4 px-3 outline-none text-black font-medium">
+                    class="bg-transparent flex-1 py-4 px-3 outline-none text-white font-medium placeholder:text-zinc-500">
                 <button id="btn-admin-submit"
-                    class="glass-button w-12 h-12 rounded-full flex items-center justify-center text-black shadow-md">
+                    class="glass-button w-12 h-12 rounded-full flex items-center justify-center text-white shadow-md">
                     <i data-lucide="arrow-right" class="w-5 h-5"></i>
                 </button>
             </div>
-            <button class="btn-back text-gray-400 text-xs font-semibold">EXIT PORTAL</button>
+            <button id="btn-admin-exit" class="text-zinc-500 hover:text-zinc-300 text-xs font-semibold uppercase tracking-wider">EXIT PORTAL</button>
         </div>
 
         <div id="step-success" class="step active flex flex-col items-center gap-8 text-center">
-            <div class="bg-blue-600/10 p-8 rounded-full border border-blue-600/20 scale-110">
-                <i data-lucide="party-popper" class="w-14 h-14 text-blue-600"></i>
+            <div class="bg-blue-500/10 p-8 rounded-full border border-blue-500/20 scale-110">
+                <i data-lucide="party-popper" class="w-14 h-14 text-blue-400"></i>
             </div>
             <div class="space-y-3">
-                <h2 class="text-3xl font-black text-black uppercase tracking-tighter">Welcome Aboard!</h2>
-                <p class="text-gray-500 font-medium">Your account is ready.</p>
+                <h2 class="text-3xl font-black text-white uppercase tracking-tighter">Welcome Aboard!</h2>
+                <p class="text-zinc-400 font-medium">Your account is ready.</p>
             </div>
             <button id="btn-explore"
-                class="glass-button px-12 py-4 rounded-full text-black font-bold text-lg shadow-lg">Start
+                class="glass-button px-12 py-4 rounded-full text-white font-bold text-lg shadow-lg">Start
                 Exploring</button>
         </div>
     </div>
@@ -914,7 +1016,7 @@
     <!-- Admin Access -->
     <div class="fixed bottom-8 left-0 right-0 z-50 flex justify-center">
         <button id="btn-admin-access"
-            class="glass-button px-6 py-2 rounded-full text-[10px] font-bold text-gray-400 hover:text-black transition-all tracking-widest uppercase border border-black/5">Admin
+            class="glass-button px-6 py-2 rounded-full text-[10px] font-bold text-zinc-400 hover:text-white transition-all tracking-widest uppercase border border-white/5">Admin
             Access</button>
     </div>
 </div>
@@ -1335,6 +1437,9 @@
     document.getElementById('btn-admin-access').onclick = () => {
         showStep('admin');
     };
+    document.getElementById('btn-admin-exit')?.addEventListener('click', () => {
+        showStep('success');
+    });
 
 
     // Fire the celebration confetti immediately on page load
