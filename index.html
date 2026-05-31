@@ -16,6 +16,38 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
+    <!-- Firebase SDK Setup -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+        import { getFirestore, collection, doc, setDoc, deleteDoc, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD53CJaUJGFCVmhyLA1CGyya4B2Vl-9cJI",
+            authDomain: "clothing-store-sigma.firebaseapp.com",
+            projectId: "clothing-store-sigma",
+            storageBucket: "clothing-store-sigma.firebasestorage.app",
+            messagingSenderId: "532456952845",
+            appId: "1:532456952845:web:1b0fe0554f8ee59a24b144",
+            measurementId: "G-YYPDP5N9HN"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+
+        // Expose to global window object so inline scripts can use it
+        window.firebaseDB = db;
+        window.firebaseDoc = doc;
+        window.firebaseSetDoc = setDoc;
+        window.firebaseDeleteDoc = deleteDoc;
+        window.firebaseCollection = collection;
+        window.firebaseGetDocs = getDocs;
+        window.firebaseOnSnapshot = onSnapshot;
+        
+        console.log("Firebase successfully initialized!");
+    </script>
+
     <script>
         tailwind.config = {
             darkMode: "class",
@@ -1518,51 +1550,19 @@
     const adminTabBtns = document.querySelectorAll('.admin-tab-btn');
     const adminTabContents = document.querySelectorAll('.admin-tab-content');
 
-    // Load data from localStorage with safety net
+    // Load data from Firebase
     let dropItems = [];
     let fullCollection = [];
 
-    try {
-        dropItems = JSON.parse(localStorage.getItem('hype_drops')) || [
-            { time: "DROPPING IN 2H", name: "Hype Essential Tee", collection: "Core Series 01", imageSrc: "assets/shirt1-front.png" },
-            { time: "READY TO SHIP", name: "District Oversized Hoodie", collection: "Winter '26", imageSrc: "assets/shirt2-front.png" },
-            { time: "LIMITED EDITION", name: "Batumi Street Joggers", collection: "Region Exclusive", imageSrc: "assets/shirt3-front.png" },
-            { time: "DROPPING TOMORROW", name: "Culture Beanie", collection: "Headwear Pack", imageSrc: "assets/shirt4-front.png" }
-        ];
-    } catch (e) {
-        console.error("Data corruption detected, resetting drops.");
-        dropItems = [
-            { time: "DROPPING IN 2H", name: "Hype Essential Tee", collection: "Core Series 01", imageSrc: "assets/shirt1-front.png" }
-        ];
-    }
-
-    try {
-        fullCollection = JSON.parse(localStorage.getItem('hype_collection')) || [
-            { time: "$85", name: "Classic Logo Tee", collection: "Archive", imageSrc: "assets/shirt3-front.png" },
-            { time: "$120", name: "Street Culture Tote", collection: "Lifestyle", imageSrc: "assets/shirt4-front.png" },
-            { time: "$65", name: "Hype District Cap", collection: "Accessories", imageSrc: "assets/shirt2-front.png" },
-            { time: "$45", name: "Individuality Tank", collection: "Statement Piece", imageSrc: "assets/shirt1-front.png" }
-        ];
-    } catch (e) {
-        console.error("Data corruption detected, resetting collection.");
-        fullCollection = [
-            { time: "$85", name: "Classic Logo Tee", collection: "Archive", imageSrc: "assets/shirt3-front.png" }
-        ];
-    }
-
-    // Cache Migration: Automatically upgrade old .jpg URLs and repair previously corrupted 5-8 PNGs in localStorage
+    // Cache Migration helper (keep for local dummy data formatting if needed)
     const upgradeImageUrl = (imgStr) => {
         if (!imgStr) return imgStr;
-        
-        // 1. Convert legacy .jpg (e.g., assets/7.jpg or 7.jpg)
         let match = imgStr.match(/(?:assets|assests)?\/*(\d+)\.jpg$/i);
         if (match) {
             const index = parseInt(match[1]);
             const normalizedIndex = ((index - 1) % 4) + 1;
             return `assets/shirt${normalizedIndex}-front.png`;
         }
-        
-        // 2. Repair invalid shirt5-shirt8 .png paths (e.g. assets/shirt7-front.png)
         match = imgStr.match(/(?:assets|assests)?\/*shirt(\d+)-(front|back)\.png$/i);
         if (match) {
             const index = parseInt(match[1]);
@@ -1571,26 +1571,49 @@
                 return `assets/shirt${normalizedIndex}-${match[2]}.png`;
             }
         }
-        
         return imgStr;
     };
-    
-    dropItems.forEach(item => { 
-        item.imageSrc = upgradeImageUrl(item.imageSrc); 
-        if (item.gallery) item.gallery = item.gallery.map(upgradeImageUrl);
-    });
-    fullCollection.forEach(item => { 
-        item.imageSrc = upgradeImageUrl(item.imageSrc); 
-        if (item.gallery) item.gallery = item.gallery.map(upgradeImageUrl);
-    });
-    localStorage.setItem('hype_drops', JSON.stringify(dropItems));
-    localStorage.setItem('hype_collection', JSON.stringify(fullCollection));
 
+    // Firebase Data Sync
+    function listenToProducts() {
+        if (!window.firebaseDB) {
+            console.warn("Firebase not ready yet, retrying in 500ms");
+            setTimeout(listenToProducts, 500);
+            return;
+        }
+
+        const productsRef = window.firebaseCollection(window.firebaseDB, "products");
+        window.firebaseOnSnapshot(productsRef, (snapshot) => {
+            const tempDrops = [];
+            const tempCollection = [];
+            
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                data.id = doc.id; // Save document ID for editing/deleting
+                if (data.type === 'drops') {
+                    tempDrops.push(data);
+                } else if (data.type === 'collection') {
+                    tempCollection.push(data);
+                }
+            });
+
+            // Sort by createdAt descending (newest first)
+            dropItems = tempDrops.sort((a, b) => b.createdAt - a.createdAt);
+            fullCollection = tempCollection.sort((a, b) => b.createdAt - a.createdAt);
+
+            // Re-render UI if functions exist
+            if (typeof initAdminPanel === 'function') initAdminPanel();
+            if (typeof initDrops === 'function') initDrops();
+            if (typeof initFullCollection === 'function') initFullCollection();
+        });
+    }
+
+    // Start listening
+    listenToProducts();
+
+    // Replaced saveData with empty func since Firebase handles it real-time
     function saveData() {
-        localStorage.setItem('hype_drops', JSON.stringify(dropItems));
-        localStorage.setItem('hype_collection', JSON.stringify(fullCollection));
-        if (typeof initDrops === 'function') initDrops();
-        if (typeof initFullCollection === 'function') initFullCollection();
+        // No-op. Handled directly in addProduct/deleteProduct now.
     }
 
     // Tab Switching
@@ -1676,6 +1699,11 @@
         oldPriceEl.classList.remove('hidden');
         oldPriceEl.parentElement.classList.replace('grid-cols-1', 'grid-cols-2');
 
+        if (type === 'collection') {
+            document.getElementById('new-coll-cat').value = item.category || 'T-Shirt';
+            document.getElementById('new-coll-sizes').value = item.sizes || 'S, M, L, XL';
+        }
+
         renderGalleryUI(type);
 
         // UI Changes
@@ -1695,6 +1723,11 @@
         oldPriceEl.value = '';
         oldPriceEl.classList.add('hidden');
         oldPriceEl.parentElement.classList.replace('grid-cols-2', 'grid-cols-1');
+
+        if (type === 'collection') {
+            document.getElementById('new-coll-cat').value = 'T-Shirt';
+            document.getElementById('new-coll-sizes').value = 'S, M, L, XL';
+        }
 
         renderGalleryUI(type);
 
@@ -1755,7 +1788,7 @@
         }
     };
 
-    window.addProduct = (type) => {
+    window.addProduct = async (type) => {
         const prefix = type === 'drops' ? 'new-prod' : 'coll-prod';
         const name = document.getElementById(`${prefix}-name`).value;
         const collection = document.getElementById(`${prefix}-collection`).value;
@@ -1765,26 +1798,42 @@
 
         if (name && collection && statusOrPrice && gallery.length > 0) {
             const itemData = {
+                type: type,
                 time: statusOrPrice,
                 oldPrice: oldPrice || null,
                 name,
                 collection,
                 imageSrc: gallery[0],
-                gallery: gallery
+                gallery: gallery,
+                createdAt: Date.now()
             };
 
-            if (editState.type === type && editState.index !== null) {
-                if (type === 'drops') dropItems[editState.index] = itemData;
-                else fullCollection[editState.index] = itemData;
-            } else {
-                if (type === 'drops') dropItems.unshift(itemData);
-                else fullCollection.unshift(itemData);
+            if (type === 'collection') {
+                itemData.category = document.getElementById('new-coll-cat').value;
+                itemData.sizes = document.getElementById('new-coll-sizes').value;
             }
 
-            resetForm(type);
-            saveData();
-            initAdminPanel();
-            confetti({ particleCount: 100, colors: [type === 'drops' ? '#4ade80' : '#a855f7', '#ffffff'] });
+            const productsRef = window.firebaseCollection(window.firebaseDB, "products");
+
+            try {
+                if (editState.type === type && editState.index !== null) {
+                    const list = type === 'drops' ? dropItems : fullCollection;
+                    const existingId = list[editState.index].id;
+                    itemData.createdAt = list[editState.index].createdAt || Date.now();
+                    
+                    const docRef = window.firebaseDoc(window.firebaseDB, "products", existingId);
+                    await window.firebaseSetDoc(docRef, itemData);
+                } else {
+                    const docRef = window.firebaseDoc(productsRef); // Auto generate ID
+                    await window.firebaseSetDoc(docRef, itemData);
+                }
+
+                resetForm(type);
+                confetti({ particleCount: 100, colors: [type === 'drops' ? '#4ade80' : '#a855f7', '#ffffff'] });
+            } catch(e) {
+                console.error("Firebase error: ", e);
+                alert("Error saving to database.");
+            }
         }
     };
 
@@ -1794,27 +1843,54 @@
         renderGalleryUI('collection');
     }, 100);
 
-    window.deleteProduct = (type, idx) => {
-        if (type === 'drops') dropItems.splice(idx, 1);
-        else fullCollection.splice(idx, 1);
-        saveData();
-        initAdminPanel();
+    window.deleteProduct = async (type, idx) => {
+        const list = type === 'drops' ? dropItems : fullCollection;
+        const item = list[idx];
+        if (!item || !item.id) {
+            if (type === 'drops') dropItems.splice(idx, 1);
+            else fullCollection.splice(idx, 1);
+            initAdminPanel();
+            return;
+        }
+
+        try {
+            const docRef = window.firebaseDoc(window.firebaseDB, "products", item.id);
+            await window.firebaseDeleteDoc(docRef);
+        } catch(e) {
+            console.error("Error deleting from database: ", e);
+        }
     };
     // --- Admin Orders Logic ---
+    let adminOrders = [];
+
     window.loadAdminOrders = (filterText = '') => {
         const ordersList = document.getElementById('admin-orders-list');
         if (!ordersList) return;
 
-        const storedOrders = JSON.parse(localStorage.getItem('hype_orders') || '[]');
-        const filtered = storedOrders.filter(o => o.id.toLowerCase().includes(filterText.toLowerCase()));
+        if (window.firebaseDB) {
+            const ordersRef = window.firebaseCollection(window.firebaseDB, "orders");
+            window.firebaseGetDocs(ordersRef).then(snapshot => {
+                adminOrders = [];
+                snapshot.forEach(doc => adminOrders.push(doc.data()));
+                adminOrders.sort((a, b) => b.createdAt - a.createdAt);
+                renderAdminOrders(filterText);
+            }).catch(e => {
+                console.error("Error loading orders from Firebase:", e);
+            });
+        }
+    };
+
+    function renderAdminOrders(filterText) {
+        const ordersList = document.getElementById('admin-orders-list');
+        if (!ordersList) return;
+        const filtered = adminOrders.filter(o => o.id.toLowerCase().includes(filterText.toLowerCase()));
 
         if (filtered.length === 0) {
             ordersList.innerHTML = `<p class="text-gray-500 text-center py-8 font-medium">No orders found.</p>`;
             return;
         }
 
-        // Render from newest to oldest
-        ordersList.innerHTML = filtered.slice().reverse().map(order => `
+        ordersList.innerHTML = filtered.map(order => `
             <div class="flex flex-col md:flex-row items-start md:items-center justify-between p-4 md:p-6 bg-white/5 rounded-3xl border border-white/5 hover:bg-white/10 transition-colors gap-4 md:gap-0">
                 <div class="flex items-center gap-4 md:gap-6 w-full md:w-auto">
                     <div class="w-12 h-12 md:w-14 md:h-14 shrink-0 rounded-full bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
@@ -1835,7 +1911,7 @@
         `).join('');
 
         lucide.createIcons();
-    };
+    }
 
     // Search input listener
     const orderSearch = document.getElementById('admin-order-search');
@@ -1845,8 +1921,7 @@
 
     // Inspect Order Details
     window.inspectOrder = (orderId) => {
-        const storedOrders = JSON.parse(localStorage.getItem('hype_orders') || '[]');
-        const order = storedOrders.find(o => o.id === orderId);
+        const order = adminOrders.find(o => o.id === orderId);
         if (!order) return;
 
         document.getElementById('modal-order-id').innerText = order.id;
@@ -2481,16 +2556,22 @@
             const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
             const totalAmount = document.getElementById('cart-total').innerText;
 
-            // Save Order to LocalStorage
+            // Save Order to Firebase
             const newOrder = {
                 id: orderId,
                 date: dateStr,
                 total: totalAmount,
-                items: JSON.parse(JSON.stringify(cart)) // Deep copy
+                items: JSON.parse(JSON.stringify(cart)), // Deep copy
+                createdAt: Date.now()
             };
-            const storedOrders = JSON.parse(localStorage.getItem('hype_orders') || '[]');
-            storedOrders.push(newOrder);
-            localStorage.setItem('hype_orders', JSON.stringify(storedOrders));
+            
+            if (window.firebaseDB) {
+                const ordersRef = window.firebaseCollection(window.firebaseDB, "orders");
+                window.firebaseSetDoc(window.firebaseDoc(ordersRef, orderId), newOrder)
+                    .catch(err => console.error("Error saving order:", err));
+            } else {
+                console.error("Firebase DB not initialized.");
+            }
 
             document.getElementById('confirm-order-id').innerText = orderId;
             document.getElementById('confirm-date').innerText = dateStr;
